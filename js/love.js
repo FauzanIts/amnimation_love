@@ -107,6 +107,11 @@ function Rise() {
 
             console.log("升空完毕");
 
+            // Show "I Love You" text
+            const loveText = document.getElementById('loveText');
+            if (loveText) {
+                loveText.classList.add('show');
+            }
         }
 
         love.style.top = (love_top - distance) + "px";

@@ -66,6 +66,28 @@ body {
 
 /*---------------------- body_center -------------------------*/
 
+/*---------------------- love-text -------------------------*/
+.love-text {
+    position: absolute;
+    left: 50%;
+    bottom: 15%;
+    transform: translateX(-50%);
+    font-size: 48px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #e8a0a0;
+    letter-spacing: 4px;
+    opacity: 0;
+    transition: opacity 1.5s ease-in;
+    z-index: 99;
+    white-space: nowrap;
+    text-shadow: 0 0 10px rgba(232, 160, 160, 0.3);
+}
+
+.love-text.show {
+    opacity: 1;
+}
+/*---------------------- love-text -------------------------*/
+
 /*---------------------- footer -------------------------*/
 @keyframes border {
     0% {
@@ -200,6 +222,12 @@ body {
         width: 100%;
         height: 100%;
     }
+
+    .love-text {
+        font-size: 28px;
+        letter-spacing: 2px;
+        bottom: 18%;
+    }
 }
 
 @media screen and (max-width: 400px) {
@@ -211,6 +239,12 @@ body {
         width: 140px;
         height: 140px;
         bottom: 50px;
+    }
+
+    .love-text {
+        font-size: 22px;
+        letter-spacing: 1px;
+        bottom: 20%;
     }
 }
 
@@ -229,6 +263,11 @@ body {
     .body_left img {
         width: 100%;
         height: 100%;
+    }
+
+    .love-text {
+        font-size: 36px;
+        letter-spacing: 3px;
     }
 }
 /*---------------------- responsive -------------------------*/
