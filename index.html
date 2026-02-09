@@ -8,17 +8,43 @@
     <meta name="title" content="Dear Sun">
     <meta name="description" content="Collecting this wasn't easy — your star is my motivation to keep going! Contributions are welcome too.">
     <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
-    <link rel="stylesheet" href="css/love.css">
+    <link rel="stylesheet" href="css/love.css?v=16">
 </head>
 
 
 <body>
 
-    <audio autoplay="autopaly" loop="loop" id="audios" preload="auto">
-        <source src="MP3/1.mp3" />
+    <!-- Tap overlay to start -->
+    <div id="tapOverlay" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:linear-gradient(135deg, #1a0a1e 0%, #2d1b33 30%, #1a0a1e 60%, #0d0511 100%);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;">
+        <div class="overlay-stars"></div>
+        <div style="font-size:70px;margin-bottom:15px;animation:pulse 1.5s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(255,80,100,0.6));">&#10084;&#65039;</div>
+        <div style="color:#f4a0b0;font-size:20px;font-family:Georgia,serif;text-align:center;padding:8px 30px;letter-spacing:3px;font-style:italic;">Tap to Start</div>
+        <div style="color:#8a5070;font-size:13px;font-family:Georgia,serif;margin-top:15px;letter-spacing:1px;font-style:italic;">~ a little surprise for you ~</div>
+    </div>
+
+    <!-- Floating hearts background -->
+    <canvas id="heartsCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+
+    <!-- Music Visualizer -->
+    <div id="musicVisualizer" class="music-visualizer" style="display:none;">
+        <div class="viz-bar"></div>
+        <div class="viz-bar"></div>
+        <div class="viz-bar"></div>
+        <div class="viz-bar"></div>
+        <div class="viz-bar"></div>
+        <div class="viz-bar"></div>
+        <div class="viz-bar"></div>
+        <div class="viz-bar"></div>
+        <div class="viz-bar"></div>
+        <div class="viz-label">&#9835; Love Love Love<br><span class="viz-artist">Vivii</span></div>
+    </div>
+
+    <audio loop id="audios" preload="auto">
+        <source src="MP3/1.mp3" type="audio/mpeg" />
+        <source src="MP3/1.mpeg" type="audio/mpeg" />
     </audio>
 
-    <div class="container" onselectstart="return false;" unselectable="on" style="-moz-user-select:none;">
+    <div class="container" onselectstart="return false;" unselectable="on" style="-moz-user-select:none; display:none;" id="mainContainer">
 
         <div class="body_left">
             <img src="images/biubiubiu.gif" alt="" ondragstart='return false;'>
@@ -31,19 +57,21 @@
                 <div class="div3"></div>
                 <div class="div4"></div>
             </div>
+            <div class="love-text" id="loveText">
+                I Love You
+                <div class="love-subtitle" id="loveSubtitle">Keep going, I'm always with you<br>my little princess&#x1F90D;</div>
+            </div>
         </div>
-
-        <div class="love-text" id="loveText">I Love You</div>
     </div>
 
-    <div class="footer">
+    <div class="footer" id="mainFooter" style="display:none;">
         <div class="border">
             <div class="border-top"></div>
             <div class="border-bottom"></div>
         </div>
     </div>
 
-    <script type="text/javascript" src="js/love.js"></script>
+    <script type="text/javascript" src="js/love.js?v=11"></script>
 
 </body>
 
