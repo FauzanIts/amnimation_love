@@ -107,6 +107,14 @@ function Rise() {
                 if (loveSub) {
                     loveSub.classList.add('show');
                 }
+
+                // Show open letter button after subtitle
+                setTimeout(() => {
+                    const btn = document.getElementById('openLetterBtn');
+                    if (btn) {
+                        btn.style.display = 'inline-block';
+                    }
+                }, 2000);
             }, 1500);
         }
 
@@ -362,3 +370,341 @@ window.addEventListener('beforeunload', function() {
         audio.currentTime = 0;
     }
 });
+
+// ==================  Page 2: Love Letter  ==================
+function showLoveLetter() {
+    const page2 = document.getElementById('page2');
+    if (!page2) return;
+
+    page2.style.display = 'block';
+    // Trigger reflow then add visible class for fade-in
+    page2.offsetHeight;
+    page2.classList.add('visible');
+
+    // Start countdown
+    startCountdown();
+
+    // Start typing effect after a short delay
+    setTimeout(() => {
+        typeLoveLetter();
+    }, 1500);
+}
+
+function startCountdown() {
+    const startDate = new Date('2026-01-16');
+    const today = new Date();
+    const diffTime = Math.abs(today - startDate);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    const countdownText = document.getElementById('countdownText');
+    if (countdownText) {
+        countdownText.textContent = 'Sudah ' + diffDays + ' hari bersama kamu \u2764\uFE0F';
+    }
+}
+
+function typeLoveLetter() {
+    const letterBody = document.getElementById('letterBody');
+    const letterClosing = document.getElementById('letterClosing');
+    if (!letterBody) return;
+
+    const lines = [
+        'Hai Nurlian sayang,',
+        '',
+        'Aku tau mungkin aku bukan orang yang paling sempurna,',
+        'tapi aku ingin kamu tau bahwa setiap hari bersamamu',
+        'adalah hari terbaik dalam hidupku.',
+        '',
+        'Kamu adalah alasan kenapa aku bangun setiap pagi',
+        'dengan senyuman. Kamu adalah tempat pulangku',
+        'di saat dunia terasa terlalu berat.',
+        '',
+        'Terima kasih sudah menjadi rumahku,',
+        'terima kasih sudah menjadi ceritaku,',
+        'terima kasih sudah menjadi mimpiku yang paling indah.',
+        '',
+        'Aku berjanji akan selalu menjaga hatimu,',
+        'menemanimu di hari-hari sulit,',
+        'dan tertawa bersamamu di hari-hari bahagia.',
+        '',
+        'Kamu bukan hanya cintaku,',
+        'kamu adalah segalanya bagiku. \u2764\uFE0F',
+    ];
+
+    let lineIndex = 0;
+    let charIndex = 0;
+    let currentLineEl = null;
+
+    // Add cursor element
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    letterBody.appendChild(cursor);
+
+    function typeChar() {
+        if (lineIndex >= lines.length) {
+            // Done typing - remove cursor and show closing
+            cursor.remove();
+            if (letterClosing) {
+                letterClosing.style.opacity = '1';
+            }
+            // Hide scroll hint
+            const hint = document.getElementById('scrollHint');
+            if (hint) hint.style.display = 'none';
+
+            // Show interactive sections after letter is done
+            setTimeout(() => {
+                showInteractiveSections();
+            }, 2000);
+            return;
+        }
+
+        const line = lines[lineIndex];
+
+        // Empty line = paragraph break
+        if (line === '') {
+            const br = document.createElement('div');
+            br.style.height = '12px';
+            letterBody.insertBefore(br, cursor);
+            lineIndex++;
+            setTimeout(typeChar, 200);
+            return;
+        }
+
+        // Start new line
+        if (charIndex === 0) {
+            currentLineEl = document.createElement('div');
+            currentLineEl.className = 'typed-line';
+            letterBody.insertBefore(currentLineEl, cursor);
+        }
+
+        // Type one character
+        currentLineEl.textContent = line.substring(0, charIndex + 1);
+        charIndex++;
+
+        if (charIndex >= line.length) {
+            // Line complete
+            charIndex = 0;
+            lineIndex++;
+            setTimeout(typeChar, 300);
+        } else {
+            // Random typing speed for natural feel
+            const speed = 30 + Math.random() * 40;
+            setTimeout(typeChar, speed);
+        }
+    }
+
+    typeChar();
+}
+
+// ==================  Interactive Sections  ==================
+function showInteractiveSections() {
+    const quiz = document.getElementById('quizSection');
+    const scratch = document.getElementById('scratchSection');
+    const timeline = document.getElementById('timelineSection');
+    const slideshow = document.getElementById('slideshowSection');
+
+    if (quiz) quiz.style.display = 'block';
+
+    setTimeout(() => {
+        if (scratch) {
+            scratch.style.display = 'block';
+            initScratchCard();
+        }
+    }, 500);
+
+    setTimeout(() => {
+        if (slideshow) {
+            slideshow.style.display = 'block';
+            initSlideshow();
+        }
+    }, 1000);
+
+    setTimeout(() => {
+        if (timeline) {
+            timeline.style.display = 'block';
+            animateTimeline();
+        }
+    }, 1500);
+
+}
+
+// ==================  Quiz Romantis  ==================
+var quizReasonIndex = 0;
+var quizReasonsList = [
+    'Karena senyummu bisa bikin hariku langsung cerah \u2600\uFE0F',
+    'Karena kamu selalu tau cara bikin aku ketawa \uD83D\uDE02',
+    'Karena kamu sabar banget sama aku yang kadang menyebalkan \uD83D\uDE05',
+    'Karena pelukanmu adalah tempat paling aman di dunia \uD83E\uDD17',
+    'Karena kamu selalu percaya sama aku, bahkan saat aku ragu sama diri sendiri \uD83D\uDCAA',
+    'Karena setiap hari bersamamu terasa seperti petualangan baru \u2728',
+    'Karena kamu cantik, luar dan dalam \uD83E\uDD70',
+    'Dan yang paling penting... karena kamu adalah KAMU \u2764\uFE0F'
+];
+
+function showNextReason() {
+    const container = document.getElementById('quizReasons');
+    const btn = document.getElementById('quizBtn');
+    if (!container || !btn) return;
+
+    if (quizReasonIndex >= quizReasonsList.length) {
+        btn.textContent = 'Itu semua alasannya \u2764\uFE0F';
+        btn.disabled = true;
+        return;
+    }
+
+    const item = document.createElement('div');
+    item.className = 'quiz-reason-item';
+    item.textContent = (quizReasonIndex + 1) + '. ' + quizReasonsList[quizReasonIndex];
+    container.appendChild(item);
+
+    quizReasonIndex++;
+
+    if (quizReasonIndex >= quizReasonsList.length) {
+        btn.textContent = 'Itu semua alasannya \u2764\uFE0F';
+        btn.disabled = true;
+    }
+}
+
+// ==================  Scratch Card  ==================
+function initScratchCard() {
+    const canvas = document.getElementById('scratchCanvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    // Draw scratch cover
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#d4727a');
+    gradient.addColorStop(0.5, '#e8889a');
+    gradient.addColorStop(1, '#c27a82');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw text on cover
+    ctx.fillStyle = '#fff';
+    ctx.font = 'italic 16px Georgia';
+    ctx.textAlign = 'center';
+    ctx.fillText('Gosok di sini \uD83D\uDC46', canvas.width / 2, canvas.height / 2 - 8);
+    ctx.font = 'italic 12px Georgia';
+    ctx.fillText('untuk buka pesan rahasia', canvas.width / 2, canvas.height / 2 + 15);
+
+    ctx.globalCompositeOperation = 'destination-out';
+
+    var isDrawing = false;
+
+    function getPos(e) {
+        const r = canvas.getBoundingClientRect();
+        if (e.touches) {
+            return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+        }
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+
+    function scratch(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        var pos = getPos(e);
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    canvas.addEventListener('mousedown', function(e) { isDrawing = true; scratch(e); });
+    canvas.addEventListener('mousemove', scratch);
+    canvas.addEventListener('mouseup', function() { isDrawing = false; });
+    canvas.addEventListener('mouseleave', function() { isDrawing = false; });
+
+    canvas.addEventListener('touchstart', function(e) { isDrawing = true; scratch(e); }, { passive: false });
+    canvas.addEventListener('touchmove', scratch, { passive: false });
+    canvas.addEventListener('touchend', function() { isDrawing = false; });
+}
+
+// ==================  Timeline Animation  ==================
+function animateTimeline() {
+    const items = document.querySelectorAll('.timeline-item');
+    items.forEach(function(item, i) {
+        setTimeout(function() {
+            item.classList.add('visible');
+        }, i * 600);
+    });
+}
+
+// ==================  Photo Slideshow  ==================
+var slidePhotos = ['images/foto1.jpeg', 'images/foto2.jpeg', 'images/foto3.jpeg', 'images/foto4.jpeg'];
+var currentSlide = 0;
+var slideAutoTimer = null;
+
+function goToSlide(idx) {
+    if (idx < 0) idx = slidePhotos.length - 1;
+    if (idx >= slidePhotos.length) idx = 0;
+
+    const img = document.getElementById('slideshowImg');
+    const dots = document.querySelectorAll('.slide-dot');
+    if (!img) return;
+
+    // Fade out
+    img.classList.add('fade-out');
+
+    setTimeout(function() {
+        img.src = slidePhotos[idx];
+        img.classList.remove('fade-out');
+    }, 400);
+
+    // Update dots
+    dots.forEach(function(d, i) {
+        d.classList.toggle('active', i === idx);
+    });
+
+    currentSlide = idx;
+    resetSlideAutoPlay();
+}
+
+function nextSlide() {
+    goToSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+    goToSlide(currentSlide - 1);
+}
+
+function resetSlideAutoPlay() {
+    if (slideAutoTimer) clearInterval(slideAutoTimer);
+    slideAutoTimer = setInterval(function() {
+        goToSlide(currentSlide + 1);
+    }, 4000);
+}
+
+function initSlideshow() {
+    // Add dot click handlers
+    const dots = document.querySelectorAll('.slide-dot');
+    dots.forEach(function(dot) {
+        dot.addEventListener('click', function() {
+            goToSlide(parseInt(this.getAttribute('data-index')));
+        });
+    });
+
+    // Swipe support for mobile
+    var touchStartX = 0;
+    var touchEndX = 0;
+    var slideFrame = document.querySelector('.slideshow-frame');
+    if (slideFrame) {
+        slideFrame.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        slideFrame.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            var diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        }, { passive: true });
+    }
+
+    // Start auto-play
+    resetSlideAutoPlay();
+}
+
+

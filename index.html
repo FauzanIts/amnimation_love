@@ -8,7 +8,8 @@
     <meta name="title" content="Dear Sun">
     <meta name="description" content="Collecting this wasn't easy — your star is my motivation to keep going! Contributions are welcome too.">
     <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
-    <link rel="stylesheet" href="css/love.css?v=16">
+    <link rel="stylesheet" href="css/love.css?v=21">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 
@@ -60,6 +61,7 @@
             <div class="love-text" id="loveText">
                 I Love You
                 <div class="love-subtitle" id="loveSubtitle">Keep going, I'm always with you<br>my little princess&#x1F90D;</div>
+                <div class="open-letter-btn" id="openLetterBtn" style="display:none;" onclick="showLoveLetter()">&#128140; Buka Surat</div>
             </div>
         </div>
     </div>
@@ -71,7 +73,98 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="js/love.js?v=11"></script>
+    <!-- Page 2: Love Letter -->
+    <div id="page2" class="page2" style="display:none;">
+        <div class="page2-inner">
+            <div class="scroll-hint" id="scrollHint">&#8595; Scroll down to read &#8595;</div>
+
+            <div class="letter-container">
+                <div class="letter-for">For: Nurlian</div>
+
+                <div class="countdown-box" id="countdownBox">
+                    <span class="countdown-heart">&#10084;&#65039;</span>
+                    <span id="countdownText"></span>
+                    <span class="countdown-heart">&#10084;&#65039;</span>
+                </div>
+
+                <div class="letter-body" id="letterBody"></div>
+
+                <div class="letter-closing" id="letterClosing" style="opacity:0;">
+                    <p>Selalu dan selamanya milikmu,</p>
+                    <p class="letter-signature">&#10084;&#65039;</p>
+                </div>
+            </div>
+
+            <!-- Quiz Romantis -->
+            <div class="quiz-section" id="quizSection" style="display:none;">
+                <div class="section-title">Tau ga kenapa aku sayang kamu? &#128149;</div>
+                <div class="quiz-reasons" id="quizReasons"></div>
+                <div class="quiz-btn-wrap">
+                    <button class="quiz-btn" id="quizBtn" onclick="showNextReason()">Tap untuk tau &#10084;&#65039;</button>
+                </div>
+            </div>
+
+            <!-- Scratch Card -->
+            <div class="scratch-section" id="scratchSection" style="display:none;">
+                <div class="section-title">&#127873; Gosok untuk pesan rahasia</div>
+                <div class="scratch-card-wrap">
+                    <div class="scratch-hidden-msg" id="scratchMsg">Kamu adalah hal terbaik yang pernah terjadi di hidupku. Aku mencintaimu lebih dari yang bisa kata-kata ungkapkan &#10084;&#65039;</div>
+                    <canvas id="scratchCanvas" class="scratch-canvas" width="300" height="180"></canvas>
+                </div>
+            </div>
+
+            <!-- Photo Slideshow -->
+            <div class="slideshow-section" id="slideshowSection" style="display:none;">
+                <div class="section-title">Momen Kita &#128247;</div>
+                <div class="slideshow-container">
+                    <div class="slideshow-frame">
+                        <img id="slideshowImg" src="images/foto1.jpeg" alt="Our moment" class="slideshow-img">
+                        <div class="slideshow-overlay"></div>
+                    </div>
+                    <div class="slideshow-dots" id="slideshowDots">
+                        <span class="slide-dot active" data-index="0"></span>
+                        <span class="slide-dot" data-index="1"></span>
+                        <span class="slide-dot" data-index="2"></span>
+                        <span class="slide-dot" data-index="3"></span>
+                    </div>
+                    <div class="slideshow-nav">
+                        <button class="slide-btn slide-prev" onclick="prevSlide()">&#10094;</button>
+                        <button class="slide-btn slide-next" onclick="nextSlide()">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline-section" id="timelineSection" style="display:none;">
+                <div class="section-title">Perjalanan Kita &#128150;</div>
+                <div class="timeline" id="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot">&#128149;</div>
+                        <div class="timeline-date">01 Mei 2024</div>
+                        <div class="timeline-event">Pertama kali jadian &#128522;</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">&#128167;</div>
+                        <div class="timeline-date">18 April 2025</div>
+                        <div class="timeline-event">Hubungan kita kandas &#128575;</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">&#10084;&#65039;</div>
+                        <div class="timeline-date">16 Januari 2026</div>
+                        <div class="timeline-event">Kita balikan lagi &#128569;</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">&#127775;</div>
+                        <div class="timeline-date">Sekarang</div>
+                        <div class="timeline-event">Dan cerita kita terus berlanjut...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/love.js?v=16"></script>
 
 </body>
 
