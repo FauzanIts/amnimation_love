@@ -500,7 +500,6 @@ function showInteractiveSections() {
     const quiz = document.getElementById('quizSection');
     const scratch = document.getElementById('scratchSection');
     const timeline = document.getElementById('timelineSection');
-    const slideshow = document.getElementById('slideshowSection');
 
     if (quiz) quiz.style.display = 'block';
 
@@ -512,19 +511,17 @@ function showInteractiveSections() {
     }, 500);
 
     setTimeout(() => {
-        if (slideshow) {
-            slideshow.style.display = 'block';
-            initSlideshow();
-        }
-    }, 1000);
-
-    setTimeout(() => {
         if (timeline) {
             timeline.style.display = 'block';
             animateTimeline();
         }
-    }, 1500);
+    }, 1000);
 
+    // Show album button
+    var albumBtn = document.getElementById('albumBtnSection');
+    setTimeout(function() {
+        if (albumBtn) albumBtn.style.display = 'block';
+    }, 1200);
 }
 
 // ==================  Quiz Romantis  ==================
@@ -632,79 +629,413 @@ function animateTimeline() {
 }
 
 // ==================  Photo Slideshow  ==================
-var slidePhotos = ['images/foto1.jpeg', 'images/foto2.jpeg', 'images/foto3.jpeg', 'images/foto4.jpeg'];
-var currentSlide = 0;
-var slideAutoTimer = null;
+// (removed - replaced by album page with Cloudinary upload)
 
-function goToSlide(idx) {
-    if (idx < 0) idx = slidePhotos.length - 1;
-    if (idx >= slidePhotos.length) idx = 0;
+// ============================================================
+//   PHOTO ALBUM SYSTEM + CLOUDINARY UPLOAD
+//   Foto default ada di defaultPhotos.
+//   Foto yang diupload dari web disimpan di localStorage +
+//   Cloudinary cloud. Tinggal upload dari halaman album!
+// ============================================================
 
-    const img = document.getElementById('slideshowImg');
-    const dots = document.querySelectorAll('.slide-dot');
-    if (!img) return;
+var CLOUD_NAME = 'dmi7faczx';
+var UPLOAD_PRESET = 'love_album';
+var STORAGE_KEY = 'loveAlbumPhotos';
 
-    // Fade out
-    img.classList.add('fade-out');
+// Default photos (bawaan, selalu ada)
+var defaultPhotos = [
+    { src: 'images/foto1.jpeg', caption: 'Momen indah kita \u2764\uFE0F', album: 'Kenangan', isDefault: true },
+    { src: 'images/foto2.jpeg', caption: 'Selalu tersenyum bersamamu \u{1F60A}', album: 'Kenangan', isDefault: true },
+    { src: 'images/foto3.jpeg', caption: 'Foto favorit aku \u{1F970}', album: 'Favorit', isDefault: true },
+    { src: 'images/foto4.jpeg', caption: 'Cantik banget \u2728', album: 'Favorit', isDefault: true },
+];
 
-    setTimeout(function() {
-        img.src = slidePhotos[idx];
-        img.classList.remove('fade-out');
-    }, 400);
+var currentAlbum = 'Semua';
+var isManageMode = false;
+var currentLbPhotos = [];
+var currentLbIndex = 0;
 
-    // Update dots
-    dots.forEach(function(d, i) {
-        d.classList.toggle('active', i === idx);
-    });
-
-    currentSlide = idx;
-    resetSlideAutoPlay();
+// Load uploaded photos from localStorage
+function loadUploadedPhotos() {
+    try {
+        var saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+        return [];
+    }
 }
 
-function nextSlide() {
-    goToSlide(currentSlide + 1);
+// Save uploaded photos to localStorage
+function saveUploadedPhotos(photos) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+    } catch (e) {
+        console.log('Storage save error');
+    }
 }
 
-function prevSlide() {
-    goToSlide(currentSlide - 1);
+// Get all photos (default + uploaded)
+function getAllPhotos() {
+    return defaultPhotos.concat(loadUploadedPhotos());
 }
 
-function resetSlideAutoPlay() {
-    if (slideAutoTimer) clearInterval(slideAutoTimer);
-    slideAutoTimer = setInterval(function() {
-        goToSlide(currentSlide + 1);
-    }, 4000);
+// Get unique album names
+function getAlbumNames() {
+    var photos = getAllPhotos();
+    var names = {};
+    for (var i = 0; i < photos.length; i++) {
+        if (photos[i].album) names[photos[i].album] = true;
+    }
+    return Object.keys(names);
 }
 
-function initSlideshow() {
-    // Add dot click handlers
-    const dots = document.querySelectorAll('.slide-dot');
-    dots.forEach(function(dot) {
-        dot.addEventListener('click', function() {
-            goToSlide(parseInt(this.getAttribute('data-index')));
-        });
-    });
+// Get photos filtered by album
+function getFilteredPhotos(albumName) {
+    var all = getAllPhotos();
+    if (albumName === 'Semua') return all;
+    return all.filter(function (p) { return p.album === albumName; });
+}
 
-    // Swipe support for mobile
-    var touchStartX = 0;
-    var touchEndX = 0;
-    var slideFrame = document.querySelector('.slideshow-frame');
-    if (slideFrame) {
-        slideFrame.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-        slideFrame.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            var diff = touchStartX - touchEndX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) nextSlide();
-                else prevSlide();
+// ==================  Open / Close Album Page  ==================
+function openAlbumPage() {
+    var page3 = document.getElementById('page3');
+    if (!page3) return;
+    page3.style.display = 'block';
+    page3.offsetHeight;
+    page3.classList.add('visible');
+
+    isManageMode = false;
+    currentAlbum = 'Semua';
+    updateAlbumSelectOptions();
+    renderAlbumTabs();
+    renderAlbumGallery();
+    updateManageBtn();
+}
+
+function closeAlbumPage() {
+    var page3 = document.getElementById('page3');
+    if (!page3) return;
+    page3.classList.remove('visible');
+    setTimeout(function () {
+        page3.style.display = 'none';
+    }, 300);
+}
+
+// ==================  Album Select for Upload  ==================
+function updateAlbumSelectOptions() {
+    var sel = document.getElementById('uploadAlbumSelect');
+    if (!sel) return;
+    var names = getAlbumNames();
+    var val = sel.value;
+    sel.innerHTML = '';
+    for (var i = 0; i < names.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = names[i];
+        opt.textContent = names[i];
+        sel.appendChild(opt);
+    }
+    var newOpt = document.createElement('option');
+    newOpt.value = '__new__';
+    newOpt.textContent = '+ Album Baru';
+    sel.appendChild(newOpt);
+    // Restore previous value if exists
+    if (val && sel.querySelector('option[value=\"' + val + '\"]')) {
+        sel.value = val;
+    }
+}
+
+function onAlbumSelectChange() {
+    var sel = document.getElementById('uploadAlbumSelect');
+    var inp = document.getElementById('newAlbumInput');
+    if (!sel || !inp) return;
+    if (sel.value === '__new__') {
+        inp.classList.add('show');
+        inp.focus();
+    } else {
+        inp.classList.remove('show');
+    }
+}
+
+// ==================  Upload Photo via Cloudinary API  ==================
+function doUploadPhoto() {
+    var sel = document.getElementById('uploadAlbumSelect');
+    var newAlbumInp = document.getElementById('newAlbumInput');
+    var captionInp = document.getElementById('captionInput');
+    var statusEl = document.getElementById('uploadStatus');
+
+    var targetAlbum = sel ? sel.value : 'Kenangan';
+    if (targetAlbum === '__new__') {
+        targetAlbum = newAlbumInp ? newAlbumInp.value.trim() : '';
+        if (!targetAlbum) {
+            if (statusEl) statusEl.textContent = '\u26A0\uFE0F Masukkan nama album baru dulu!';
+            return;
+        }
+    }
+    var caption = captionInp ? captionInp.value.trim() : '';
+
+    // Open file picker
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = function () {
+        var files = input.files;
+        if (!files || !files.length) return;
+        if (statusEl) statusEl.textContent = '\u23F3 Uploading ' + files.length + ' foto...';
+
+        var uploaded = 0;
+        var failed = 0;
+        var total = files.length;
+
+        for (var i = 0; i < files.length; i++) {
+            (function (file, idx) {
+                var formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', UPLOAD_PRESET);
+                formData.append('folder', 'love_album');
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload');
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        var resp = JSON.parse(xhr.responseText);
+                        var saved = loadUploadedPhotos();
+                        saved.push({
+                            src: resp.secure_url,
+                            caption: caption || 'Foto baru \u2764\uFE0F',
+                            album: targetAlbum,
+                            publicId: resp.public_id,
+                            uploadedAt: new Date().toISOString()
+                        });
+                        saveUploadedPhotos(saved);
+                        uploaded++;
+                    } else {
+                        failed++;
+                    }
+                    checkDone();
+                };
+
+                xhr.onerror = function () {
+                    failed++;
+                    checkDone();
+                };
+
+                xhr.send(formData);
+            })(files[i], i);
+        }
+
+        function checkDone() {
+            if (uploaded + failed >= total) {
+                if (failed > 0) {
+                    statusEl.textContent = '\u2705 ' + uploaded + ' berhasil, \u274C ' + failed + ' gagal';
+                } else {
+                    statusEl.textContent = '\u2705 ' + uploaded + ' foto berhasil diupload!';
+                }
+                if (captionInp) captionInp.value = '';
+                if (newAlbumInp) { newAlbumInp.value = ''; newAlbumInp.classList.remove('show'); }
+                // Refresh gallery
+                updateAlbumSelectOptions();
+                renderAlbumTabs();
+                renderAlbumGallery();
+                setTimeout(function () {
+                    if (statusEl) statusEl.textContent = '';
+                }, 3000);
+            } else {
+                statusEl.textContent = '\u23F3 Uploading... (' + (uploaded + failed) + '/' + total + ')';
             }
-        }, { passive: true });
+        }
+    };
+    input.click();
+}
+
+// ==================  Manage Mode (Delete)  ==================
+function toggleManageMode() {
+    isManageMode = !isManageMode;
+    updateManageBtn();
+    renderAlbumGallery();
+}
+
+function updateManageBtn() {
+    var btn = document.getElementById('manageToggle');
+    if (!btn) return;
+    if (isManageMode) {
+        btn.textContent = '\u2705 Selesai';
+        btn.classList.add('active');
+    } else {
+        btn.textContent = '\uD83D\uDDD1\uFE0F Kelola';
+        btn.classList.remove('active');
+    }
+}
+
+function deletePhoto(src) {
+    if (!confirm('Hapus foto ini?')) return;
+    var saved = loadUploadedPhotos();
+    saved = saved.filter(function (p) { return p.src !== src; });
+    saveUploadedPhotos(saved);
+    renderAlbumTabs();
+    renderAlbumGallery();
+}
+
+// ==================  Render Album Tabs  ==================
+function renderAlbumTabs() {
+    var container = document.getElementById('albumTabs');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var names = ['Semua'].concat(getAlbumNames());
+
+    for (var i = 0; i < names.length; i++) {
+        var count = names[i] === 'Semua' ? getAllPhotos().length : getFilteredPhotos(names[i]).length;
+        var tab = document.createElement('div');
+        tab.className = 'album-tab' + (names[i] === currentAlbum ? ' active' : '');
+        tab.textContent = names[i] + ' (' + count + ')';
+        tab.setAttribute('data-album', names[i]);
+        tab.addEventListener('click', function () {
+            currentAlbum = this.getAttribute('data-album');
+            renderAlbumTabs();
+            renderAlbumGallery();
+        });
+        container.appendChild(tab);
+    }
+}
+
+// ==================  Render Album Gallery  ==================
+function renderAlbumGallery() {
+    var gallery = document.getElementById('albumGallery');
+    var empty = document.getElementById('albumEmpty');
+    if (!gallery) return;
+
+    var photos = getFilteredPhotos(currentAlbum);
+    gallery.innerHTML = '';
+    gallery.className = 'album-gallery' + (isManageMode ? ' manage-mode' : '');
+
+    if (photos.length === 0) {
+        gallery.style.display = 'none';
+        if (empty) empty.style.display = 'block';
+        return;
     }
 
-    // Start auto-play
-    resetSlideAutoPlay();
+    gallery.style.display = 'grid';
+    if (empty) empty.style.display = 'none';
+
+    for (var i = 0; i < photos.length; i++) {
+        var card = document.createElement('div');
+        card.className = 'album-card';
+        if (i === 0 && photos.length > 2) card.classList.add('wide');
+        card.style.animationDelay = (i * 0.06) + 's';
+
+        // Delete button (only for uploaded photos, shown in manage mode)
+        if (!photos[i].isDefault) {
+            var delBtn = document.createElement('button');
+            delBtn.className = 'photo-delete-btn';
+            delBtn.textContent = '\u2715';
+            delBtn.setAttribute('data-src', photos[i].src);
+            delBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                deletePhoto(this.getAttribute('data-src'));
+            });
+            card.appendChild(delBtn);
+        }
+
+        var img = document.createElement('img');
+        img.className = 'album-card-img';
+        img.src = photos[i].src;
+        img.alt = photos[i].caption || '';
+        img.loading = 'lazy';
+        card.appendChild(img);
+
+        if (photos[i].caption) {
+            var cap = document.createElement('div');
+            cap.className = 'album-card-caption';
+            cap.textContent = photos[i].caption;
+            card.appendChild(cap);
+        }
+
+        // Lightbox on click
+        (function (idx) {
+            card.addEventListener('click', function () {
+                openLightbox(photos, idx);
+            });
+        })(i);
+
+        gallery.appendChild(card);
+    }
 }
+
+// ==================  Lightbox  ==================
+function openLightbox(photos, index) {
+    currentLbPhotos = photos;
+    currentLbIndex = index;
+
+    var lb = document.getElementById('lightbox');
+    var img = document.getElementById('lbImg');
+    var caption = document.getElementById('lbCaption');
+    var counter = document.getElementById('lbCounter');
+    if (!lb || !img) return;
+
+    img.src = photos[index].src;
+    if (caption) caption.textContent = photos[index].caption || '';
+    if (counter) counter.textContent = (index + 1) + ' / ' + photos.length;
+
+    lb.style.display = 'flex';
+    lb.offsetHeight;
+    lb.classList.add('visible');
+
+    // Hide prev/next if only 1 photo
+    var prevBtn = lb.querySelector('.lb-prev');
+    var nextBtn = lb.querySelector('.lb-next');
+    if (prevBtn) prevBtn.style.display = photos.length > 1 ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = photos.length > 1 ? 'flex' : 'none';
+}
+
+function closeLightbox(e) {
+    if (e && e.target && !e.target.classList.contains('lightbox') && !e.target.classList.contains('lb-close')) return;
+    var lb = document.getElementById('lightbox');
+    if (!lb) return;
+    lb.classList.remove('visible');
+    setTimeout(function() { lb.style.display = 'none'; }, 300);
+}
+
+function lbNav(dir, e) {
+    if (e) { e.stopPropagation(); e.preventDefault(); }
+    if (currentLbPhotos.length <= 1) return;
+
+    currentLbIndex += dir;
+    if (currentLbIndex < 0) currentLbIndex = currentLbPhotos.length - 1;
+    if (currentLbIndex >= currentLbPhotos.length) currentLbIndex = 0;
+
+    var img = document.getElementById('lbImg');
+    var caption = document.getElementById('lbCaption');
+    var counter = document.getElementById('lbCounter');
+
+    if (img) img.src = currentLbPhotos[currentLbIndex].src;
+    if (caption) caption.textContent = currentLbPhotos[currentLbIndex].caption || '';
+    if (counter) counter.textContent = (currentLbIndex + 1) + ' / ' + currentLbPhotos.length;
+}
+
+function lbPrev(e) { lbNav(-1, e); }
+function lbNext(e) { lbNav(1, e); }
+
+// Swipe support for lightbox
+(function() {
+    var startX = 0;
+    var lb = null;
+    document.addEventListener('DOMContentLoaded', function() {
+        lb = document.getElementById('lightbox');
+    });
+    document.addEventListener('touchstart', function(e) {
+        if (!lb || lb.style.display === 'none') return;
+        startX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+        if (!lb || lb.style.display === 'none') return;
+        var diff = startX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 60) {
+            if (diff > 0) lbNext();
+            else lbPrev();
+        }
+    }, { passive: true });
+})();
 
 

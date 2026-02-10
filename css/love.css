@@ -588,119 +588,497 @@ body {
 /*---------------------- interactive sections -------------------------*/
 
 /*---------------------- photo slideshow -------------------------*/
-.slideshow-section {
+/* (removed - replaced by album page) */
+
+/*---------------------- open album button -------------------------*/
+.album-btn-section {
     margin-top: 30px;
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInSection 0.8s ease forwards;
 }
 
-.slideshow-container {
-    position: relative;
-    max-width: 340px;
-    margin: 0 auto;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(212, 114, 122, 0.2);
+.open-album-btn {
+    padding: 14px 35px;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: #fff;
+    background: linear-gradient(135deg, #d4727a, #e8889a, #d4727a);
+    background-size: 200% 200%;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 15px rgba(212, 114, 122, 0.4);
+    animation: btnGlow 3s ease-in-out infinite;
+    transition: transform 0.2s;
 }
 
-.slideshow-frame {
-    position: relative;
+.open-album-btn:active {
+    transform: scale(0.95);
+}
+
+/*---------------------- upload section -------------------------*/
+.upload-section {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 20px 18px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(212, 114, 122, 0.12);
+    box-shadow: 0 4px 20px rgba(212, 114, 122, 0.08);
+}
+
+.upload-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.upload-album-select {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 14px;
+    border: 1.5px solid rgba(212, 114, 122, 0.25);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #6b4a50;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23d4727a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+}
+
+.new-album-input {
+    display: none;
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 14px;
+    border: 1.5px solid rgba(212, 114, 122, 0.25);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #6b4a50;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 13px;
+    outline: none;
+}
+
+.new-album-input.show {
+    display: block;
+}
+
+.caption-input {
     width: 100%;
-    aspect-ratio: 3 / 4;
+    padding: 10px 14px;
+    border: 1.5px solid rgba(212, 114, 122, 0.18);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #6b4a50;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
+.caption-input::placeholder,
+.new-album-input::placeholder {
+    color: #c9a0a8;
+}
+
+.upload-btn-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-upload-foto {
+    padding: 11px 28px;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: #fff;
+    background: linear-gradient(135deg, #d4727a, #e8889a);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(212, 114, 122, 0.35);
+    transition: transform 0.2s;
+}
+
+.btn-upload-foto:active {
+    transform: scale(0.95);
+}
+
+.manage-toggle {
+    padding: 11px 22px;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #c27a82;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1.5px solid rgba(212, 114, 122, 0.25);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.manage-toggle:active {
+    transform: scale(0.95);
+}
+
+.manage-toggle.active {
+    background: linear-gradient(135deg, #e85d6f, #d4727a);
+    color: #fff;
+    border-color: transparent;
+}
+
+.upload-status {
+    text-align: center;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #c27a82;
+    margin-top: 8px;
+    min-height: 20px;
+}
+
+/* Delete button on photo cards */
+.album-card {
+    position: relative;
+}
+
+.photo-delete-btn {
+    display: none;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    background: rgba(220, 50, 50, 0.85);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 13px;
+    cursor: pointer;
+    z-index: 5;
+    line-height: 26px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.manage-mode .photo-delete-btn {
+    display: block;
+}
+
+/*---------------------- upload section -------------------------*/
+
+/*---------------------- page 3: photo album -------------------------*/
+.page3 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 300;
+    background: linear-gradient(170deg, #fff5f5 0%, #ffe8ec 40%, #fff0f3 70%, #fce4ec 100%);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    opacity: 0;
+    transition: opacity 0.6s ease-in;
+}
+
+.page3.visible {
+    opacity: 1;
+}
+
+.page3-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 245, 245, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(212, 114, 122, 0.12);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.album-back-btn {
+    padding: 8px 16px;
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    color: #d4727a;
+    background: rgba(212, 114, 122, 0.1);
+    border: 1px solid rgba(212, 114, 122, 0.2);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.album-back-btn:active {
+    transform: scale(0.95);
+    background: rgba(212, 114, 122, 0.2);
+}
+
+.page3-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 26px;
+    font-weight: 700;
+    color: #d4727a;
+    text-shadow: 0 0 15px rgba(212, 114, 122, 0.2);
+}
+
+.page3-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px 15px 80px;
+}
+
+/* Album Tabs */
+.album-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 5px 0 15px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.album-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.album-tab {
+    padding: 8px 18px;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #c27a82;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(212, 114, 122, 0.15);
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.album-tab.active {
+    background: linear-gradient(135deg, #d4727a, #e8889a);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 3px 12px rgba(212, 114, 122, 0.35);
+}
+
+.album-tab:active {
+    transform: scale(0.95);
+}
+
+/* Gallery Grid */
+.album-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.album-card {
+    border-radius: 14px;
     overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(212, 114, 122, 0.12);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(15px);
+    animation: fadeInAlbumCard 0.5s ease forwards;
+}
+
+.album-card:active {
+    transform: scale(0.97);
+}
+
+@keyframes fadeInAlbumCard {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.album-card-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
     background: #fce4ec;
 }
 
-.slideshow-img {
+.album-card-caption {
+    padding: 8px 10px;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: #8a5a62;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+}
+
+.album-empty {
+    text-align: center;
+    padding: 60px 20px;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #c27a82;
+}
+
+/* Wide card for first photo in album */
+.album-card.wide {
+    grid-column: span 2;
+}
+
+.album-card.wide .album-card-img {
+    aspect-ratio: 16 / 9;
+}
+
+@media screen and (min-width: 500px) {
+    .album-gallery {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .album-card.wide {
+        grid-column: span 2;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    .album-gallery {
+        gap: 8px;
+    }
+    .album-card-caption {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+}
+
+/*---------------------- lightbox -------------------------*/
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: opacity 0.8s ease-in-out, transform 0.8s ease;
-}
-
-.slideshow-img.fade-out {
-    opacity: 0;
-    transform: scale(1.05);
-}
-
-.slideshow-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40%;
-    background: linear-gradient(to top, rgba(212, 114, 122, 0.15), transparent);
-    pointer-events: none;
-}
-
-.slideshow-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 0;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.slide-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(212, 114, 122, 0.3);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.slide-dot.active {
-    background: #d4727a;
-    transform: scale(1.3);
-    box-shadow: 0 0 8px rgba(212, 114, 122, 0.5);
-}
-
-.slideshow-nav {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    display: flex;
-    justify-content: space-between;
-    padding: 0 8px;
-    pointer-events: none;
-}
-
-.slide-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    color: #d4727a;
-    font-size: 16px;
-    cursor: pointer;
-    pointer-events: all;
-    transition: all 0.3s ease;
+    z-index: 500;
+    background: rgba(10, 5, 15, 0.95);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.slide-btn:active {
-    transform: scale(0.9);
-    background: rgba(255, 255, 255, 0.8);
+.lightbox.visible {
+    opacity: 1;
 }
 
-@media screen and (max-width: 600px) {
-    .slideshow-container {
-        max-width: 280px;
-    }
+.lb-img {
+    max-width: 92%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
 }
-/*---------------------- photo slideshow -------------------------*/
+
+.lb-close {
+    position: absolute;
+    top: 15px;
+    right: 18px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.lb-close:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.lb-nav:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.lb-prev { left: 10px; }
+.lb-next { right: 10px; }
+
+.lb-caption {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.lb-counter {
+    position: absolute;
+    bottom: 25px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: 'Georgia', serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+/*---------------------- lightbox -------------------------*/
 
 /*---------------------- footer -------------------------*/
 @keyframes border {

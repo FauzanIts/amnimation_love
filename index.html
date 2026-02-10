@@ -8,7 +8,7 @@
     <meta name="title" content="Dear Sun">
     <meta name="description" content="Collecting this wasn't easy — your star is my motivation to keep going! Contributions are welcome too.">
     <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
-    <link rel="stylesheet" href="css/love.css?v=21">
+    <link rel="stylesheet" href="css/love.css?v=23">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
@@ -113,24 +113,11 @@
                 </div>
             </div>
 
-            <!-- Photo Slideshow -->
-            <div class="slideshow-section" id="slideshowSection" style="display:none;">
+            <!-- Open Album Button -->
+            <div class="album-btn-section" id="albumBtnSection" style="display:none;">
                 <div class="section-title">Momen Kita &#128247;</div>
-                <div class="slideshow-container">
-                    <div class="slideshow-frame">
-                        <img id="slideshowImg" src="images/foto1.jpeg" alt="Our moment" class="slideshow-img">
-                        <div class="slideshow-overlay"></div>
-                    </div>
-                    <div class="slideshow-dots" id="slideshowDots">
-                        <span class="slide-dot active" data-index="0"></span>
-                        <span class="slide-dot" data-index="1"></span>
-                        <span class="slide-dot" data-index="2"></span>
-                        <span class="slide-dot" data-index="3"></span>
-                    </div>
-                    <div class="slideshow-nav">
-                        <button class="slide-btn slide-prev" onclick="prevSlide()">&#10094;</button>
-                        <button class="slide-btn slide-next" onclick="nextSlide()">&#10095;</button>
-                    </div>
+                <div style="text-align:center;">
+                    <button class="open-album-btn" onclick="openAlbumPage()">&#128248; Buka Album Foto</button>
                 </div>
             </div>
 
@@ -164,7 +151,53 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="js/love.js?v=16"></script>
+    <!-- Page 3: Photo Album -->
+    <div id="page3" class="page3" style="display:none;">
+        <div class="page3-header">
+            <button class="album-back-btn" onclick="closeAlbumPage()">&#10094; Kembali</button>
+            <div class="page3-title">Album Kenangan Kita &#128247;</div>
+        </div>
+        <div class="page3-inner">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <div class="upload-row">
+                    <select class="upload-album-select" id="uploadAlbumSelect" onchange="onAlbumSelectChange()">
+                        <option value="Kenangan">Kenangan</option>
+                        <option value="Favorit">Favorit</option>
+                        <option value="__new__">+ Album Baru</option>
+                    </select>
+                    <input type="text" class="new-album-input" id="newAlbumInput" placeholder="Nama album baru...">
+                </div>
+                <input type="text" class="caption-input" id="captionInput" placeholder="Caption foto... (opsional)">
+                <div class="upload-btn-row">
+                    <button class="btn-upload-foto" onclick="doUploadPhoto()">&#128247; Upload Foto</button>
+                    <button class="manage-toggle" id="manageToggle" onclick="toggleManageMode()">&#128465; Kelola</button>
+                </div>
+                <div class="upload-status" id="uploadStatus"></div>
+            </div>
+            <!-- Album tabs -->
+            <div class="album-tabs" id="albumTabs"></div>
+            <!-- Gallery grid -->
+            <div class="album-gallery" id="albumGallery"></div>
+            <!-- Empty state -->
+            <div class="album-empty" id="albumEmpty" style="display:none;">
+                <div style="font-size:50px;margin-bottom:12px;">&#128248;</div>
+                <div>Belum ada foto di album ini</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" style="display:none;" onclick="closeLightbox(event)">
+        <button class="lb-close" onclick="closeLightbox()">&#10005;</button>
+        <button class="lb-nav lb-prev" onclick="lbPrev(event)">&#10094;</button>
+        <img id="lbImg" class="lb-img" src="" alt="">
+        <button class="lb-nav lb-next" onclick="lbNext(event)">&#10095;</button>
+        <div class="lb-caption" id="lbCaption"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+    </div>
+
+    <script type="text/javascript" src="js/love.js?v=18"></script>
 
 </body>
 
