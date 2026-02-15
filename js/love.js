@@ -643,14 +643,10 @@ var UPLOAD_PRESET = 'love_album';
 var STORAGE_KEY = 'loveAlbumPhotos';
 
 // Default photos (bawaan, selalu ada)
-var defaultPhotos = [
-    { src: 'images/foto1.jpeg', caption: 'Momen indah kita \u2764\uFE0F', album: 'Kenangan', isDefault: true },
-    { src: 'images/foto2.jpeg', caption: 'Selalu tersenyum bersamamu \u{1F60A}', album: 'Kenangan', isDefault: true },
-    { src: 'images/foto3.jpeg', caption: 'Foto favorit aku \u{1F970}', album: 'Favorit', isDefault: true },
-    { src: 'images/foto4.jpeg', caption: 'Cantik banget \u2728', album: 'Favorit', isDefault: true },
-];
+var defaultPhotos = [];
 
 var currentAlbum = 'Semua';
+var albumViewMode = 'overview'; // 'overview' or 'detail'
 var isManageMode = false;
 var currentLbPhotos = [];
 var currentLbIndex = 0;
@@ -705,10 +701,10 @@ function openAlbumPage() {
     page3.classList.add('visible');
 
     isManageMode = false;
+    albumViewMode = 'overview';
     currentAlbum = 'Semua';
     updateAlbumSelectOptions();
-    renderAlbumTabs();
-    renderAlbumGallery();
+    renderAlbumOverview();
     updateManageBtn();
 }
 
@@ -742,6 +738,8 @@ function updateAlbumSelectOptions() {
     if (val && sel.querySelector('option[value=\"' + val + '\"]')) {
         sel.value = val;
     }
+    // Auto-show new album input if __new__ is the current value
+    onAlbumSelectChange();
 }
 
 function onAlbumSelectChange() {
@@ -836,8 +834,11 @@ function doUploadPhoto() {
                 if (newAlbumInp) { newAlbumInp.value = ''; newAlbumInp.classList.remove('show'); }
                 // Refresh gallery
                 updateAlbumSelectOptions();
-                renderAlbumTabs();
-                renderAlbumGallery();
+                if (albumViewMode === 'overview') {
+                    renderAlbumOverview();
+                } else {
+                    renderAlbumGallery();
+                }
                 setTimeout(function () {
                     if (statusEl) statusEl.textContent = '';
                 }, 3000);
@@ -853,7 +854,11 @@ function doUploadPhoto() {
 function toggleManageMode() {
     isManageMode = !isManageMode;
     updateManageBtn();
-    renderAlbumGallery();
+    if (albumViewMode === 'overview') {
+        renderAlbumOverview();
+    } else {
+        renderAlbumGallery();
+    }
 }
 
 function updateManageBtn() {
@@ -869,35 +874,144 @@ function updateManageBtn() {
 }
 
 function deletePhoto(src) {
-    if (!confirm('Hapus foto ini?')) return;
     var saved = loadUploadedPhotos();
     saved = saved.filter(function (p) { return p.src !== src; });
     saveUploadedPhotos(saved);
-    renderAlbumTabs();
+    renderAlbumGallery();
+    // If album is now empty and we're in detail, go back to overview
+    var remaining = getFilteredPhotos(currentAlbum);
+    if (remaining.length === 0 && currentAlbum !== 'Semua') {
+        backToAlbumOverview();
+    }
+}
+
+function deleteAlbum(albumName) {
+    var saved = loadUploadedPhotos();
+    saved = saved.filter(function (p) { return p.album !== albumName; });
+    saveUploadedPhotos(saved);
+    updateAlbumSelectOptions();
+    renderAlbumOverview();
+}
+
+// ==================  Render Album Overview (Cover Cards)  ==================
+function renderAlbumOverview() {
+    var overview = document.getElementById('albumOverview');
+    var detail = document.getElementById('albumDetail');
+    if (!overview) return;
+
+    // Show overview, hide detail
+    overview.style.display = 'grid';
+    if (detail) detail.style.display = 'none';
+    albumViewMode = 'overview';
+
+    overview.innerHTML = '';
+    overview.className = 'album-overview' + (isManageMode ? ' manage-mode' : '');
+
+    var albumNames = getAlbumNames();
+    var allPhotos = getAllPhotos();
+
+    // Show empty state if no photos at all
+    if (allPhotos.length === 0) {
+        overview.style.display = 'none';
+        var empty = document.getElementById('albumEmpty');
+        if (empty) { empty.style.display = 'block'; empty.parentNode === detail ? null : overview.parentNode.appendChild(empty); }
+        return;
+    }
+
+    // "Semua Foto" card first
+    var allCard = createCoverCard('Semua Foto', allPhotos.length, allPhotos[0].src, true, false);
+    allCard.addEventListener('click', function () {
+        if (!isManageMode) openAlbumDetail('Semua');
+    });
+    overview.appendChild(allCard);
+
+    // Individual album cards
+    for (var i = 0; i < albumNames.length; i++) {
+        var name = albumNames[i];
+        var photos = getFilteredPhotos(name);
+        if (photos.length === 0) continue;
+        var card = createCoverCard(name, photos.length, photos[0].src, false, true);
+        (function (albumName) {
+            card.addEventListener('click', function () {
+                if (!isManageMode) openAlbumDetail(albumName);
+            });
+        })(name);
+        card.style.animationDelay = ((i + 1) * 0.08) + 's';
+        overview.appendChild(card);
+    }
+}
+
+function createCoverCard(name, count, coverSrc, isAll, canDelete) {
+    var card = document.createElement('div');
+    card.className = 'album-cover-card' + (isAll ? ' all-photos' : '');
+
+    // Delete album button (not for 'Semua Foto')
+    if (canDelete) {
+        var delBtn = document.createElement('button');
+        delBtn.className = 'album-cover-delete-btn';
+        delBtn.textContent = '\u2715';
+        delBtn.setAttribute('data-album', name);
+        delBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            deleteAlbum(this.getAttribute('data-album'));
+        });
+        delBtn.addEventListener('touchend', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            deleteAlbum(this.getAttribute('data-album'));
+        });
+        card.appendChild(delBtn);
+    }
+
+    var img = document.createElement('img');
+    img.className = 'album-cover-img';
+    img.src = coverSrc;
+    img.alt = name;
+    img.loading = 'lazy';
+    card.appendChild(img);
+
+    var overlay = document.createElement('div');
+    overlay.className = 'album-cover-overlay';
+
+    var nameEl = document.createElement('div');
+    nameEl.className = 'album-cover-name';
+    nameEl.textContent = name;
+    overlay.appendChild(nameEl);
+
+    var countEl = document.createElement('div');
+    countEl.className = 'album-cover-count';
+    countEl.textContent = count + ' foto';
+    overlay.appendChild(countEl);
+
+    card.appendChild(overlay);
+    return card;
+}
+
+// ==================  Album Detail View  ==================
+function openAlbumDetail(albumName) {
+    var overview = document.getElementById('albumOverview');
+    var detail = document.getElementById('albumDetail');
+    var titleEl = document.getElementById('albumDetailTitle');
+    if (!detail) return;
+
+    // Hide overview, show detail
+    if (overview) overview.style.display = 'none';
+    detail.style.display = 'block';
+    albumViewMode = 'detail';
+    currentAlbum = albumName;
+
+    var displayName = albumName === 'Semua' ? 'Semua Foto' : albumName;
+    if (titleEl) titleEl.textContent = displayName + ' 📸';
+
     renderAlbumGallery();
 }
 
-// ==================  Render Album Tabs  ==================
-function renderAlbumTabs() {
-    var container = document.getElementById('albumTabs');
-    if (!container) return;
-    container.innerHTML = '';
-
-    var names = ['Semua'].concat(getAlbumNames());
-
-    for (var i = 0; i < names.length; i++) {
-        var count = names[i] === 'Semua' ? getAllPhotos().length : getFilteredPhotos(names[i]).length;
-        var tab = document.createElement('div');
-        tab.className = 'album-tab' + (names[i] === currentAlbum ? ' active' : '');
-        tab.textContent = names[i] + ' (' + count + ')';
-        tab.setAttribute('data-album', names[i]);
-        tab.addEventListener('click', function () {
-            currentAlbum = this.getAttribute('data-album');
-            renderAlbumTabs();
-            renderAlbumGallery();
-        });
-        container.appendChild(tab);
-    }
+function backToAlbumOverview() {
+    albumViewMode = 'overview';
+    isManageMode = false;
+    updateManageBtn();
+    renderAlbumOverview();
 }
 
 // ==================  Render Album Gallery  ==================
@@ -925,14 +1039,20 @@ function renderAlbumGallery() {
         if (i === 0 && photos.length > 2) card.classList.add('wide');
         card.style.animationDelay = (i * 0.06) + 's';
 
-        // Delete button (only for uploaded photos, shown in manage mode)
-        if (!photos[i].isDefault) {
+        // Delete button (shown in manage mode)
+        {
             var delBtn = document.createElement('button');
             delBtn.className = 'photo-delete-btn';
             delBtn.textContent = '\u2715';
             delBtn.setAttribute('data-src', photos[i].src);
             delBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
+                e.preventDefault();
+                deletePhoto(this.getAttribute('data-src'));
+            });
+            delBtn.addEventListener('touchend', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
                 deletePhoto(this.getAttribute('data-src'));
             });
             card.appendChild(delBtn);
@@ -952,10 +1072,10 @@ function renderAlbumGallery() {
             card.appendChild(cap);
         }
 
-        // Lightbox on click
+        // Lightbox on click (only when not in manage mode)
         (function (idx) {
             card.addEventListener('click', function () {
-                openLightbox(photos, idx);
+                if (!isManageMode) openLightbox(photos, idx);
             });
         })(i);
 
