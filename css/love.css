@@ -493,20 +493,77 @@ body {
 }
 
 .quiz-reason-item {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 15px;
-    padding: 14px 20px;
-    margin-bottom: 10px;
+    position: relative;
+    background: linear-gradient(135deg, rgba(255,240,243,0.85), rgba(255,255,255,0.7));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 20px 22px 20px 26px;
+    margin-bottom: 14px;
     font-family: 'Georgia', serif;
     font-style: italic;
     font-size: 15px;
     color: #6b4a50;
-    border-left: 3px solid #d4727a;
+    line-height: 1.7;
+    border: 1.5px solid rgba(212, 114, 122, 0.25);
+    border-left: 4px solid #d4727a;
+    box-shadow: 0 4px 18px rgba(212, 114, 122, 0.12), inset 0 1px 0 rgba(255,255,255,0.6);
     opacity: 0;
     transform: translateX(-20px);
     animation: slideInReason 0.5s ease forwards;
+    overflow: hidden;
+}
+
+/* Romantic corner ornaments */
+.quiz-reason-item::before,
+.quiz-reason-item::after {
+    position: absolute;
+    font-size: 14px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+.quiz-reason-item::before {
+    content: '\2740';
+    top: 6px;
+    right: 10px;
+}
+.quiz-reason-item::after {
+    content: '\2740';
+    bottom: 6px;
+    left: 10px;
+}
+
+/* Reason number styling */
+.reason-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: linear-gradient(135deg, #d4727a, #e8889a);
+    color: #fff;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: bold;
+    border-radius: 50%;
+    margin-right: 10px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(212, 114, 122, 0.3);
+}
+
+/* Reason title (bold part before the dash) */
+.reason-title {
+    font-weight: bold;
+    color: #c25a6a;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15.5px;
+}
+
+.reason-body {
+    display: block;
+    color: #7a5058;
+    font-size: 14.5px;
 }
 
 @keyframes slideInReason {

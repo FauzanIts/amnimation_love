@@ -567,7 +567,7 @@ var quizReasonIndex = 0;
 var quizReasonsList = [
     'Aku sayang semua hal yang ada pada dirimu — Mungkin dulu aku suka kamu karena sifat cerewetmu, tapi kalau sekarang kamu tanya lagi, jawabannya adalah karena aku sudah sayang dengan semua hal yang ada pada dirimu tanpa terkecuali. Bagiku, kamu adalah paket lengkap: lucu, menggemaskan, cantik, cerewet, bahkan hobi merajukmu pun membuatku makin sayang.',
     'Kamu adalah tipe idealku yang sebenarnya — Sejujurnya, susah sekali mencari perempuan seperti kamu karena semua kriteria yang aku cari ada padamu. Perasaanku rasanya sudah ter-setting default hanya untuk kamu, my little princess.',
-    'Suaramu dan tawamu adalah obat bagiku — Aku sangat suka mendengar kamu bercerita (yapping) dan mendengar suara tawamu yang khas karena itu terasa lucu dan menyenangkan. Bahkan, mendengar suaramu bercerita bisa menjadi "obat tidur" paling ampuh yang membuatku merasa nyaman dan tenang.',
+    'Suaramu dan tawamu adalah obat bagiku — Aku sangat suka mendengar kamu bercerita dan mendengar suara tawamu yang khas karena itu terasa lucu dan menyenangkan. Bahkan, mendengar suaramu bercerita bisa menjadi "obat tidur" paling ampuh yang membuatku merasa nyaman dan tenang.',
     'Hanya denganmu aku merasa benar-benar "nyambung" — Sebagai orang yang pendiam, aku sering merasa tidak nyambung kalau bicara dengan orang lain. Tapi dengan kamu, obrolan kita selalu mengalir, dan aku merasa bisa menjadi diriku sendiri.',
     'Kamu cantik apa adanya — Di mataku, kamu selalu terlihat cantik bagaimanapun keadaanmu, bahkan tanpa riasan sekalipun (bare face). Melihat wajahmu saja sudah cukup membuatku merasa adem dan tenang.',
     'Kamu adalah cinta pertamaku yang sulit dilupakan — Sulit untuk berpaling atau move on kalau sudah berkaitan dengan cinta pertama, dan itulah alasan kenapa aku selalu ingin kembali berjuang untukmu. \u2764\uFE0F'
@@ -586,7 +586,33 @@ function showNextReason() {
 
     const item = document.createElement('div');
     item.className = 'quiz-reason-item';
-    item.textContent = (quizReasonIndex + 1) + '. ' + quizReasonsList[quizReasonIndex];
+
+    // Split title and body by " — "
+    var text = quizReasonsList[quizReasonIndex];
+    var dashIdx = text.indexOf(' — ');
+    var titleText = dashIdx !== -1 ? text.substring(0, dashIdx) : text;
+    var bodyText = dashIdx !== -1 ? text.substring(dashIdx + 3) : '';
+
+    // Number badge
+    var numSpan = document.createElement('span');
+    numSpan.className = 'reason-number';
+    numSpan.textContent = quizReasonIndex + 1;
+    item.appendChild(numSpan);
+
+    // Title
+    var titleSpan = document.createElement('span');
+    titleSpan.className = 'reason-title';
+    titleSpan.textContent = titleText;
+    item.appendChild(titleSpan);
+
+    // Body
+    if (bodyText) {
+        var bodySpan = document.createElement('span');
+        bodySpan.className = 'reason-body';
+        bodySpan.textContent = bodyText;
+        item.appendChild(bodySpan);
+    }
+
     container.appendChild(item);
 
     quizReasonIndex++;
