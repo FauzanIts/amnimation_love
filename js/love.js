@@ -565,14 +565,12 @@ function showInteractiveSections() {
 // ==================  Quiz Romantis  ==================
 var quizReasonIndex = 0;
 var quizReasonsList = [
-    'Karena senyummu tuh efeknya instan\u2026 hari yang tadinya flat langsung jadi cerah \uD83C\uDF24\uFE0F',
-    'Karena kamu selalu punya cara bikin aku ketawa, bahkan pas moodku lagi random \uD83D\uDE06',
-    'Karena kamu sabar banget sama aku padahal aku kadang nyebelin level "tolong mute dulu" \uD83D\uDE05',
-    'Karena pelukan kamu itu versi paling aman dari kata "rumah" \uD83E\uDD0D\uD83E\uDEF6',
-    'Karena kamu percaya sama aku, bahkan di saat aku sendiri lagi ragu sama diri sendiri \uD83D\uDCAA\u2728',
-    'Karena bareng kamu, hal-hal kecil pun jadi terasa seru kayak petualangan mini tiap hari \u2728',
-    'Karena kamu cantik\u2026 bukan cuma luar, tapi hati kamu juga bikin aku jatuh cinta terus \uD83E\uDD70',
-    'Dan yang paling penting... karena kamu adalah KAMU \u2764\uFE0F'
+    'Aku sayang semua hal yang ada pada dirimu — Mungkin dulu aku suka kamu karena sifat cerewetmu, tapi kalau sekarang kamu tanya lagi, jawabannya adalah karena aku sudah sayang dengan semua hal yang ada pada dirimu tanpa terkecuali. Bagiku, kamu adalah paket lengkap: lucu, menggemaskan, cantik, cerewet, bahkan hobi merajukmu pun membuatku makin sayang.',
+    'Kamu adalah tipe idealku yang sebenarnya — Sejujurnya, susah sekali mencari perempuan seperti kamu karena semua kriteria yang aku cari ada padamu. Perasaanku rasanya sudah ter-setting default hanya untuk kamu, my little princess.',
+    'Suaramu dan tawamu adalah obat bagiku — Aku sangat suka mendengar kamu bercerita (yapping) dan mendengar suara tawamu yang khas karena itu terasa lucu dan menyenangkan. Bahkan, mendengar suaramu bercerita bisa menjadi "obat tidur" paling ampuh yang membuatku merasa nyaman dan tenang.',
+    'Hanya denganmu aku merasa benar-benar "nyambung" — Sebagai orang yang pendiam, aku sering merasa tidak nyambung kalau bicara dengan orang lain. Tapi dengan kamu, obrolan kita selalu mengalir, dan aku merasa bisa menjadi diriku sendiri.',
+    'Kamu cantik apa adanya — Di mataku, kamu selalu terlihat cantik bagaimanapun keadaanmu, bahkan tanpa riasan sekalipun (bare face). Melihat wajahmu saja sudah cukup membuatku merasa adem dan tenang.',
+    'Kamu adalah cinta pertamaku yang sulit dilupakan — Sulit untuk berpaling atau move on kalau sudah berkaitan dengan cinta pertama, dan itulah alasan kenapa aku selalu ingin kembali berjuang untukmu. \u2764\uFE0F'
 ];
 
 function showNextReason() {
