@@ -384,6 +384,19 @@ function showLoveLetter() {
     // Start countdown
     startCountdown();
 
+    // Hide scroll hint on scroll
+    var page2El = document.getElementById('page2');
+    if (page2El) {
+        var scrollHintHidden = false;
+        page2El.addEventListener('scroll', function () {
+            if (!scrollHintHidden && page2El.scrollTop > 50) {
+                scrollHintHidden = true;
+                var hint = document.getElementById('scrollHint');
+                if (hint) { hint.style.opacity = '0'; hint.style.transition = 'opacity 0.5s'; }
+            }
+        });
+    }
+
     // Start typing effect after a short delay
     setTimeout(() => {
         typeLoveLetter();
@@ -408,26 +421,38 @@ function typeLoveLetter() {
     if (!letterBody) return;
 
     const lines = [
-        'Hai Nurlian sayang,',
+        'Hai sayang,',
         '',
-        'Aku tau mungkin aku bukan orang yang paling sempurna,',
-        'tapi aku ingin kamu tau bahwa setiap hari bersamamu',
-        'adalah hari terbaik dalam hidupku.',
+        'Aku nggak mau sok jadi orang paling sempurna.',
+        'Tapi aku mau kamu tau satu hal: aku serius sama kamu.',
+        'Di tengah hari yang kadang rame dan capek,',
+        'kamu itu tetap jadi bagian yang paling aku cari',
+        'tempat aku tenang, tempat aku pulang.',
         '',
-        'Kamu adalah alasan kenapa aku bangun setiap pagi',
-        'dengan senyuman. Kamu adalah tempat pulangku',
-        'di saat dunia terasa terlalu berat.',
+        'Makasih ya\u2026udah jadi cerita yang bikin aku semangat,',
+        'dan jadi alasan aku pengen jadi versi terbaik',
+        'dari diriku sendiri.',
         '',
-        'Terima kasih sudah menjadi rumahku,',
-        'terima kasih sudah menjadi ceritaku,',
-        'terima kasih sudah menjadi mimpiku yang paling indah.',
+        'Aku juga ngerti, yang kamu butuhin itu',
+        'bukan janji manis doang, tapi rasa aman.',
+        'Jadi aku mau belajar lebih peka:',
+        'nggak ngilang, nggak bikin kamu ngerasa sendiri,',
+        'dan tetap ada walau cuma lewat hal-hal kecil',
+        'yang konsisten.',
+        'Kalau kamu lagi berat, aku pengen jadi orang',
+        'yang pertama kamu inget buat bersandar.',
         '',
-        'Aku berjanji akan selalu menjaga hatimu,',
-        'menemanimu di hari-hari sulit,',
-        'dan tertawa bersamamu di hari-hari bahagia.',
+        'Dan karena 18 Februari itu hari spesial kamu\u2026',
+        'aku pengen jadi orang yang ngucapin paling tulus:',
+        'Selamat ulang tahun, sayang.',
+        'Semoga kamu selalu sehat, hatimu selalu tenang,',
+        'dan mimpi-mimpimu satu-satu jadi nyata.',
+        'Aku bangga sama kamu',
+        'dan aku bersyukur bisa punya kamu.',
         '',
-        'Kamu bukan hanya cintaku,',
-        'kamu adalah segalanya bagiku. \u2764\uFE0F',
+        'Kamu bukan cuma "cintaku".',
+        'Kamu itu\u2026 kesayanganku',
+        'dan orang yang pengen aku jaga. \u2764\uFE0F',
     ];
 
     let lineIndex = 0;
@@ -496,6 +521,11 @@ function typeLoveLetter() {
 }
 
 // ==================  Interactive Sections  ==================
+function showDivider(id) {
+    var el = document.getElementById(id);
+    if (el) { el.style.display = 'block'; el.classList.add('show'); }
+}
+
 function showInteractiveSections() {
     const quiz = document.getElementById('quizSection');
     const scratch = document.getElementById('scratchSection');
@@ -504,6 +534,7 @@ function showInteractiveSections() {
     if (quiz) quiz.style.display = 'block';
 
     setTimeout(() => {
+        showDivider('divScratch');
         if (scratch) {
             scratch.style.display = 'block';
             initScratchCard();
@@ -511,29 +542,30 @@ function showInteractiveSections() {
     }, 500);
 
     setTimeout(() => {
+        showDivider('divAlbum');
+        var albumBtn = document.getElementById('albumBtnSection');
+        if (albumBtn) albumBtn.style.display = 'block';
+    }, 900);
+
+    setTimeout(() => {
+        showDivider('divTimeline');
         if (timeline) {
             timeline.style.display = 'block';
             animateTimeline();
         }
-    }, 1000);
-
-    // Show album button
-    var albumBtn = document.getElementById('albumBtnSection');
-    setTimeout(function() {
-        if (albumBtn) albumBtn.style.display = 'block';
-    }, 1200);
+    }, 1300);
 }
 
 // ==================  Quiz Romantis  ==================
 var quizReasonIndex = 0;
 var quizReasonsList = [
-    'Karena senyummu bisa bikin hariku langsung cerah \u2600\uFE0F',
-    'Karena kamu selalu tau cara bikin aku ketawa \uD83D\uDE02',
-    'Karena kamu sabar banget sama aku yang kadang menyebalkan \uD83D\uDE05',
-    'Karena pelukanmu adalah tempat paling aman di dunia \uD83E\uDD17',
-    'Karena kamu selalu percaya sama aku, bahkan saat aku ragu sama diri sendiri \uD83D\uDCAA',
-    'Karena setiap hari bersamamu terasa seperti petualangan baru \u2728',
-    'Karena kamu cantik, luar dan dalam \uD83E\uDD70',
+    'Karena senyummu tuh efeknya instan\u2026 hari yang tadinya flat langsung jadi cerah \uD83C\uDF24\uFE0F',
+    'Karena kamu selalu punya cara bikin aku ketawa, bahkan pas moodku lagi random \uD83D\uDE06',
+    'Karena kamu sabar banget sama aku padahal aku kadang nyebelin level "tolong mute dulu" \uD83D\uDE05',
+    'Karena pelukan kamu itu versi paling aman dari kata "rumah" \uD83E\uDD0D\uD83E\uDEF6',
+    'Karena kamu percaya sama aku, bahkan di saat aku sendiri lagi ragu sama diri sendiri \uD83D\uDCAA\u2728',
+    'Karena bareng kamu, hal-hal kecil pun jadi terasa seru kayak petualangan mini tiap hari \u2728',
+    'Karena kamu cantik\u2026 bukan cuma luar, tapi hati kamu juga bikin aku jatuh cinta terus \uD83E\uDD70',
     'Dan yang paling penting... karena kamu adalah KAMU \u2764\uFE0F'
 ];
 
@@ -618,14 +650,224 @@ function initScratchCard() {
     canvas.addEventListener('touchend', function() { isDrawing = false; });
 }
 
-// ==================  Timeline Animation  ==================
-function animateTimeline() {
-    const items = document.querySelectorAll('.timeline-item');
-    items.forEach(function(item, i) {
-        setTimeout(function() {
-            item.classList.add('visible');
-        }, i * 600);
+// ==================  Timeline System (localStorage)  ==================
+var TIMELINE_KEY = 'loveTimelineItems';
+var timelineEditIndex = -1; // -1 = adding new, >=0 = editing
+
+var defaultTimeline = [
+    { dot: '\uD83D\uDC95', date: '01 Mei 2024', event: 'Pertama kali jadian \uD83D\uDE0A' },
+    { dot: '\uD83D\uDCA7', date: '18 April 2025', event: 'Hubungan kita kandas \uD83D\uDE3F' },
+    { dot: '\u2764\uFE0F', date: '16 Januari 2026', event: 'Kita balikan lagi \uD83D\uDE39' },
+    { dot: '\uD83C\uDF1F', date: 'Sekarang', event: 'Dan cerita kita terus berlanjut...' }
+];
+
+var timelineEmojis = ['\uD83D\uDC95', '\u2764\uFE0F', '\uD83D\uDCA7', '\uD83C\uDF1F', '\uD83C\uDF38', '\uD83D\uDC8D', '\uD83C\uDF89', '\u2728', '\uD83E\uDD70', '\uD83D\uDE0A'];
+
+function loadTimeline() {
+    try {
+        var saved = localStorage.getItem(TIMELINE_KEY);
+        return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function saveTimeline(items) {
+    try {
+        localStorage.setItem(TIMELINE_KEY, JSON.stringify(items));
+    } catch (e) {
+        console.log('Timeline save error');
+    }
+}
+
+function getTimelineItems() {
+    var saved = loadTimeline();
+    return saved !== null ? saved : defaultTimeline.slice();
+}
+
+function renderTimeline() {
+    var container = document.getElementById('timeline');
+    if (!container) return;
+    container.innerHTML = '';
+
+    var items = getTimelineItems();
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var div = document.createElement('div');
+        div.className = 'timeline-item visible';
+
+        var dot = document.createElement('div');
+        dot.className = 'timeline-dot';
+        dot.textContent = item.dot;
+        div.appendChild(dot);
+
+        var date = document.createElement('div');
+        date.className = 'timeline-date';
+        date.textContent = item.date;
+        div.appendChild(date);
+
+        var ev = document.createElement('div');
+        ev.className = 'timeline-event';
+        ev.textContent = item.event;
+        div.appendChild(ev);
+
+        var actions = document.createElement('div');
+        actions.className = 'timeline-item-actions';
+
+        var editBtn = document.createElement('button');
+        editBtn.className = 'timeline-edit-btn';
+        editBtn.textContent = '\u270F\uFE0F Edit';
+        editBtn.setAttribute('data-idx', i);
+        editBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            showTimelineForm(parseInt(this.getAttribute('data-idx')));
+        });
+        editBtn.addEventListener('touchend', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showTimelineForm(parseInt(this.getAttribute('data-idx')));
+        });
+        actions.appendChild(editBtn);
+
+        var delBtn = document.createElement('button');
+        delBtn.className = 'timeline-delete-btn';
+        delBtn.textContent = '\uD83D\uDDD1\uFE0F Hapus';
+        delBtn.setAttribute('data-idx', i);
+        delBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            deleteTimelineItem(parseInt(this.getAttribute('data-idx')));
+        });
+        delBtn.addEventListener('touchend', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            deleteTimelineItem(parseInt(this.getAttribute('data-idx')));
+        });
+        actions.appendChild(delBtn);
+
+        div.appendChild(actions);
+        container.appendChild(div);
+    }
+}
+
+function deleteTimelineItem(idx) {
+    var items = getTimelineItems();
+    if (idx < 0 || idx >= items.length) return;
+    items.splice(idx, 1);
+    saveTimeline(items);
+    renderTimeline();
+}
+
+function showTimelineForm(editIdx) {
+    // Remove existing form if any
+    var existing = document.querySelector('.timeline-form-overlay');
+    if (existing) existing.remove();
+
+    timelineEditIndex = (typeof editIdx === 'number') ? editIdx : -1;
+    var items = getTimelineItems();
+    var isEdit = timelineEditIndex >= 0 && timelineEditIndex < items.length;
+    var current = isEdit ? items[timelineEditIndex] : { dot: '\u2764\uFE0F', date: '', event: '' };
+
+    var overlay = document.createElement('div');
+    overlay.className = 'timeline-form-overlay';
+
+    var form = document.createElement('div');
+    form.className = 'timeline-form';
+
+    var title = document.createElement('div');
+    title.className = 'timeline-form-title';
+    title.textContent = isEdit ? 'Edit Momen' : 'Tambah Momen Baru';
+    form.appendChild(title);
+
+    // Emoji select
+    var emojiSel = document.createElement('select');
+    emojiSel.id = 'tlFormEmoji';
+    for (var e = 0; e < timelineEmojis.length; e++) {
+        var opt = document.createElement('option');
+        opt.value = timelineEmojis[e];
+        opt.textContent = timelineEmojis[e];
+        if (timelineEmojis[e] === current.dot) opt.selected = true;
+        emojiSel.appendChild(opt);
+    }
+    form.appendChild(emojiSel);
+
+    // Date input
+    var dateInp = document.createElement('input');
+    dateInp.type = 'text';
+    dateInp.id = 'tlFormDate';
+    dateInp.placeholder = 'Tanggal (cth: 01 Mei 2024)';
+    dateInp.value = current.date;
+    form.appendChild(dateInp);
+
+    // Event input
+    var eventInp = document.createElement('input');
+    eventInp.type = 'text';
+    eventInp.id = 'tlFormEvent';
+    eventInp.placeholder = 'Apa yang terjadi?';
+    eventInp.value = current.event;
+    form.appendChild(eventInp);
+
+    // Buttons
+    var btns = document.createElement('div');
+    btns.className = 'timeline-form-buttons';
+
+    var saveBtn = document.createElement('button');
+    saveBtn.className = 'timeline-form-save';
+    saveBtn.textContent = isEdit ? 'Simpan' : 'Tambah';
+    saveBtn.addEventListener('click', function () { saveTimelineForm(); });
+    btns.appendChild(saveBtn);
+
+    var cancelBtn = document.createElement('button');
+    cancelBtn.className = 'timeline-form-cancel';
+    cancelBtn.textContent = 'Batal';
+    cancelBtn.addEventListener('click', function () { closeTimelineForm(); });
+    btns.appendChild(cancelBtn);
+
+    form.appendChild(btns);
+    overlay.appendChild(form);
+
+    overlay.addEventListener('click', function (ev) {
+        if (ev.target === overlay) closeTimelineForm();
     });
+
+    document.body.appendChild(overlay);
+}
+
+function saveTimelineForm() {
+    var emoji = document.getElementById('tlFormEmoji');
+    var dateInp = document.getElementById('tlFormDate');
+    var eventInp = document.getElementById('tlFormEvent');
+    if (!dateInp || !eventInp) return;
+
+    var d = dateInp.value.trim();
+    var ev = eventInp.value.trim();
+    if (!d || !ev) return;
+
+    var items = getTimelineItems();
+    var newItem = {
+        dot: emoji ? emoji.value : '\u2764\uFE0F',
+        date: d,
+        event: ev
+    };
+
+    if (timelineEditIndex >= 0 && timelineEditIndex < items.length) {
+        items[timelineEditIndex] = newItem;
+    } else {
+        items.push(newItem);
+    }
+
+    saveTimeline(items);
+    closeTimelineForm();
+    renderTimeline();
+}
+
+function closeTimelineForm() {
+    var overlay = document.querySelector('.timeline-form-overlay');
+    if (overlay) overlay.remove();
+    timelineEditIndex = -1;
+}
+
+function animateTimeline() {
+    renderTimeline();
 }
 
 // ==================  Photo Slideshow  ==================
@@ -893,6 +1135,80 @@ function deleteAlbum(albumName) {
     renderAlbumOverview();
 }
 
+function showRenameAlbumForm(oldName) {
+    var existing = document.querySelector('.album-rename-overlay');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.className = 'album-rename-overlay';
+
+    var form = document.createElement('div');
+    form.className = 'album-rename-form';
+
+    var title = document.createElement('div');
+    title.className = 'album-rename-title';
+    title.textContent = 'Rename Album';
+    form.appendChild(title);
+
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'album-rename-input';
+    inp.value = oldName;
+    inp.placeholder = 'Nama album baru...';
+    form.appendChild(inp);
+
+    var btns = document.createElement('div');
+    btns.className = 'album-rename-buttons';
+
+    var saveBtn = document.createElement('button');
+    saveBtn.className = 'album-rename-save';
+    saveBtn.textContent = 'Simpan';
+    saveBtn.addEventListener('click', function () {
+        var newName = inp.value.trim();
+        if (newName && newName !== oldName) {
+            renameAlbum(oldName, newName);
+        }
+        closeRenameAlbumForm();
+    });
+    btns.appendChild(saveBtn);
+
+    var cancelBtn = document.createElement('button');
+    cancelBtn.className = 'album-rename-cancel';
+    cancelBtn.textContent = 'Batal';
+    cancelBtn.addEventListener('click', function () {
+        closeRenameAlbumForm();
+    });
+    btns.appendChild(cancelBtn);
+
+    form.appendChild(btns);
+    overlay.appendChild(form);
+
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeRenameAlbumForm();
+    });
+
+    document.body.appendChild(overlay);
+    inp.focus();
+    inp.select();
+}
+
+function closeRenameAlbumForm() {
+    var overlay = document.querySelector('.album-rename-overlay');
+    if (overlay) overlay.remove();
+}
+
+function renameAlbum(oldName, newName) {
+    var saved = loadUploadedPhotos();
+    for (var i = 0; i < saved.length; i++) {
+        if (saved[i].album === oldName) {
+            saved[i].album = newName;
+        }
+    }
+    saveUploadedPhotos(saved);
+    updateAlbumSelectOptions();
+    renderAlbumOverview();
+}
+
 // ==================  Render Album Overview (Cover Cards)  ==================
 function renderAlbumOverview() {
     var overview = document.getElementById('albumOverview');
@@ -962,6 +1278,22 @@ function createCoverCard(name, count, coverSrc, isAll, canDelete) {
             deleteAlbum(this.getAttribute('data-album'));
         });
         card.appendChild(delBtn);
+
+        var editBtn = document.createElement('button');
+        editBtn.className = 'album-cover-edit-btn';
+        editBtn.textContent = '\u270F\uFE0F';
+        editBtn.setAttribute('data-album', name);
+        editBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            showRenameAlbumForm(this.getAttribute('data-album'));
+        });
+        editBtn.addEventListener('touchend', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            showRenameAlbumForm(this.getAttribute('data-album'));
+        });
+        card.appendChild(editBtn);
     }
 
     var img = document.createElement('img');

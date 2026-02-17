@@ -8,7 +8,7 @@
     <meta name="title" content="Dear Sun">
     <meta name="description" content="Collecting this wasn't easy — your star is my motivation to keep going! Contributions are welcome too.">
     <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
-    <link rel="stylesheet" href="css/love.css?v=26">
+    <link rel="stylesheet" href="css/love.css?v=29">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
@@ -76,9 +76,10 @@
     <!-- Page 2: Love Letter -->
     <div id="page2" class="page2" style="display:none;">
         <div class="page2-inner">
-            <div class="scroll-hint" id="scrollHint">&#8595; Scroll down to read &#8595;</div>
+            <div class="scroll-hint" id="scrollHint">&#8595; Scroll ke bawah &#8595;</div>
 
-            <div class="letter-container">
+            <!-- Section: Surat Cinta -->
+            <div class="p2-card letter-container">
                 <div class="letter-for">For: Nurlian</div>
 
                 <div class="countdown-box" id="countdownBox">
@@ -95,8 +96,11 @@
                 </div>
             </div>
 
-            <!-- Quiz Romantis -->
-            <div class="quiz-section" id="quizSection" style="display:none;">
+            <!-- Divider -->
+            <div class="p2-divider"><span>&#10047;</span></div>
+
+            <!-- Section: Quiz Romantis -->
+            <div class="p2-card" id="quizSection" style="display:none;">
                 <div class="section-title">Tau ga kenapa aku sayang kamu? &#128149;</div>
                 <div class="quiz-reasons" id="quizReasons"></div>
                 <div class="quiz-btn-wrap">
@@ -104,8 +108,11 @@
                 </div>
             </div>
 
-            <!-- Scratch Card -->
-            <div class="scratch-section" id="scratchSection" style="display:none;">
+            <!-- Divider -->
+            <div class="p2-divider" id="divScratch" style="display:none;"><span>&#10047;</span></div>
+
+            <!-- Section: Scratch Card -->
+            <div class="p2-card" id="scratchSection" style="display:none;">
                 <div class="section-title">&#127873; Gosok untuk pesan rahasia</div>
                 <div class="scratch-card-wrap">
                     <div class="scratch-hidden-msg" id="scratchMsg">Kamu adalah hal terbaik yang pernah terjadi di hidupku. Aku mencintaimu lebih dari yang bisa kata-kata ungkapkan &#10084;&#65039;</div>
@@ -113,41 +120,28 @@
                 </div>
             </div>
 
-            <!-- Open Album Button -->
-            <div class="album-btn-section" id="albumBtnSection" style="display:none;">
+            <!-- Divider -->
+            <div class="p2-divider" id="divAlbum" style="display:none;"><span>&#128247;</span></div>
+
+            <!-- Section: Album Button -->
+            <div class="p2-card p2-card-center" id="albumBtnSection" style="display:none;">
                 <div class="section-title">Momen Kita &#128247;</div>
-                <div style="text-align:center;">
-                    <button class="open-album-btn" onclick="openAlbumPage()">&#128248; Buka Album Foto</button>
-                </div>
+                <p class="p2-card-subtitle">Kumpulan foto kenangan indah kita berdua</p>
+                <button class="open-album-btn" onclick="openAlbumPage()">&#128248; Buka Album Foto</button>
             </div>
 
-            <!-- Timeline -->
-            <div class="timeline-section" id="timelineSection" style="display:none;">
+            <!-- Divider -->
+            <div class="p2-divider" id="divTimeline" style="display:none;"><span>&#128150;</span></div>
+
+            <!-- Section: Timeline -->
+            <div class="p2-card" id="timelineSection" style="display:none;">
                 <div class="section-title">Perjalanan Kita &#128150;</div>
-                <div class="timeline" id="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-dot">&#128149;</div>
-                        <div class="timeline-date">01 Mei 2024</div>
-                        <div class="timeline-event">Pertama kali jadian &#128522;</div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-dot">&#128167;</div>
-                        <div class="timeline-date">18 April 2025</div>
-                        <div class="timeline-event">Hubungan kita kandas &#128575;</div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-dot">&#10084;&#65039;</div>
-                        <div class="timeline-date">16 Januari 2026</div>
-                        <div class="timeline-event">Kita balikan lagi &#128569;</div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-dot">&#127775;</div>
-                        <div class="timeline-date">Sekarang</div>
-                        <div class="timeline-event">Dan cerita kita terus berlanjut...</div>
-                    </div>
-                </div>
+                <div class="timeline" id="timeline"></div>
+                <button class="timeline-add-btn" onclick="showTimelineForm()">+ Tambah Momen</button>
             </div>
 
+            <!-- Bottom spacer -->
+            <div style="height: 40px;"></div>
         </div>
     </div>
 
@@ -203,7 +197,7 @@
         <div class="lb-counter" id="lbCounter"></div>
     </div>
 
-    <script type="text/javascript" src="js/love.js?v=21"></script>
+    <script type="text/javascript" src="js/love.js?v=24"></script>
 
 </body>
 
