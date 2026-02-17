@@ -82,7 +82,9 @@ function Rise() {
     console.log("开始升空");
     let timer2 = null,
         distance = 0;
-    const target = 120, 
+    // On mobile, reduce rise distance so subtitle doesn't crowd into the heart
+    const isMobile = window.innerWidth <= 600;
+    const target = isMobile ? 40 : 120, 
         speed = 1;
 
     let love_top = parseFloat(window.getComputedStyle(love, null).top.slice(0, -2));
