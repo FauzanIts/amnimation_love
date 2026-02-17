@@ -209,6 +209,19 @@ window.onload = function () {
 };
 
 // ==================  Floating Hearts Particle System  ==================
+// --- Performance: hearts animation control ---
+var _heartsAnimId = null;
+var _heartsRunning = false;
+
+function stopFloatingHearts() {
+    _heartsRunning = false;
+    if (_heartsAnimId) { cancelAnimationFrame(_heartsAnimId); _heartsAnimId = null; }
+}
+function resumeFloatingHearts() {
+    if (!_heartsRunning && _heartsAnimFunc) { _heartsRunning = true; _heartsAnimFunc(0); }
+}
+var _heartsAnimFunc = null;
+
 function startFloatingHearts() {
     const canvas = document.getElementById('heartsCanvas');
     if (!canvas) return;
@@ -219,7 +232,12 @@ function startFloatingHearts() {
         canvas.height = window.innerHeight;
     }
     resize();
-    window.addEventListener('resize', resize);
+    // Throttled resize
+    var _resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(_resizeTimer);
+        _resizeTimer = setTimeout(resize, 250);
+    });
 
     const hearts = [];
     const heartColors = [
@@ -230,6 +248,10 @@ function startFloatingHearts() {
         'rgba(220,80,110,0.2)',
         'rgba(255,130,160,0.3)'
     ];
+
+    // Fewer hearts on mobile
+    var maxHearts = window.innerWidth <= 600 ? 10 : 18;
+    var heartCap = window.innerWidth <= 600 ? 18 : 35;
 
     function createHeart() {
         return {
@@ -248,7 +270,7 @@ function startFloatingHearts() {
     }
 
     // Seed initial hearts
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < maxHearts; i++) {
         const h = createHeart();
         h.y = Math.random() * canvas.height;
         hearts.push(h);
@@ -269,12 +291,23 @@ function startFloatingHearts() {
     }
 
     let frame = 0;
-    function animate() {
+    // Throttle to ~20fps on mobile, ~30fps on desktop
+    var fpsInterval = window.innerWidth <= 600 ? 50 : 33;
+    var lastFrameTime = 0;
+
+    function animate(timestamp) {
+        if (!_heartsRunning) { _heartsAnimId = null; return; }
+        _heartsAnimId = requestAnimationFrame(animate);
+
+        // Throttle frame rate
+        if (timestamp - lastFrameTime < fpsInterval) return;
+        lastFrameTime = timestamp;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         frame++;
 
         // Add new heart occasionally
-        if (frame % 40 === 0 && hearts.length < 35) {
+        if (frame % 40 === 0 && hearts.length < heartCap) {
             hearts.push(createHeart());
         }
 
@@ -291,10 +324,10 @@ function startFloatingHearts() {
 
             drawHeart(h.x, h.y, h.size, h.color, h.rotation);
         }
-
-        requestAnimationFrame(animate);
     }
-    animate();
+    _heartsAnimFunc = animate;
+    _heartsRunning = true;
+    animate(0);
 }
 
 // ==================  Floating Music Player  ==================
@@ -442,11 +475,14 @@ function initMusicPlayer(audio) {
 // ==================  Auto Pause/Resume on Tab Switch  ==================
 document.addEventListener('visibilitychange', function() {
     var audio = document.getElementById('audios');
-    if (!audio) return;
     if (document.hidden) {
-        audio.pause();
+        // Pause everything when tab is hidden
+        if (audio) audio.pause();
+        stopFloatingHearts();
     } else {
-        audio.play().catch(function(){});
+        // Resume when tab is visible again
+        if (audio) audio.play().catch(function(){});
+        resumeFloatingHearts();
     }
 });
 
@@ -470,6 +506,9 @@ window.addEventListener('beforeunload', function() {
 function showLoveLetter() {
     const page2 = document.getElementById('page2');
     if (!page2) return;
+
+    // Pause hearts canvas while on page2 (not visible anyway)
+    stopFloatingHearts();
 
     page2.style.display = 'block';
     // Trigger reflow then add visible class for fade-in
@@ -538,7 +577,7 @@ function typeLoveLetter() {
         '',
         'Maaf ya kalau sekarang cuma bisa ngucapin dari jauh, tapi aku janji bakal selalu ada buat kamu. Semoga ini jadi awal dari banyak kebahagiaan yang bakal kita jalanin bareng-bareng lagi ke depannya.',
         '',
-        'I love you more than words can say, Nurlian manisku \uD83E\uDD0D\uD83D\uDE3D\uD83D\uDC97',
+        'I love you more than words can say, my sweet princess \uD83E\uDD0D\uD83D\uDE3D\uD83D\uDC97',
     ];
 
     let lineIndex = 0;
@@ -800,7 +839,8 @@ function getTimelineItems() {
     return cachedTimeline !== null ? cachedTimeline : defaultTimeline.slice();
 }
 
-// Listen for real-time updates from Firebase
+// Listen for real-time updates from Firebase (throttled)
+var _tlRenderTimer = null;
 function initTimelineListener() {
     if (typeof db === 'undefined') return;
     db.ref('timeline').on('value', function (snapshot) {
@@ -810,7 +850,9 @@ function initTimelineListener() {
         } else {
             cachedTimeline = defaultTimeline.slice();
         }
-        renderTimeline();
+        // Throttle re-render to avoid rapid DOM updates
+        clearTimeout(_tlRenderTimer);
+        _tlRenderTimer = setTimeout(renderTimeline, 300);
     });
 }
 
@@ -1035,22 +1077,26 @@ function saveUploadedPhotos(photos) {
     }
 }
 
-// Listen for real-time updates from Firebase
+// Listen for real-time updates from Firebase (throttled)
+var _photosRenderTimer = null;
 function initPhotosListener() {
     if (typeof db === 'undefined') return;
     db.ref('photos').on('value', function (snapshot) {
         var data = snapshot.val();
         cachedPhotos = (data && Array.isArray(data)) ? data : [];
-        // Refresh album view if currently visible
-        var page3 = document.getElementById('page3');
-        if (page3 && page3.style.display !== 'none') {
-            updateAlbumSelectOptions();
-            if (albumViewMode === 'overview') {
-                renderAlbumOverview();
-            } else {
-                renderAlbumGallery();
+        // Throttle re-render to avoid rapid DOM updates
+        clearTimeout(_photosRenderTimer);
+        _photosRenderTimer = setTimeout(function() {
+            var page3 = document.getElementById('page3');
+            if (page3 && page3.style.display !== 'none') {
+                updateAlbumSelectOptions();
+                if (albumViewMode === 'overview') {
+                    renderAlbumOverview();
+                } else {
+                    renderAlbumGallery();
+                }
             }
-        }
+        }, 300);
     });
 }
 
