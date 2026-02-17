@@ -125,6 +125,10 @@ function Rise() {
 }
 
 window.onload = function () {
+    // Start Firebase listeners early so data is cached before user opens sections
+    initTimelineListener();
+    initPhotosListener();
+
     // Initialize DOM elements
     blocks = document.getElementsByClassName("block");
     block = blocks[0];
@@ -650,9 +654,9 @@ function initScratchCard() {
     canvas.addEventListener('touchend', function() { isDrawing = false; });
 }
 
-// ==================  Timeline System (localStorage)  ==================
-var TIMELINE_KEY = 'loveTimelineItems';
+// ==================  Timeline System (Firebase)  ==================
 var timelineEditIndex = -1; // -1 = adding new, >=0 = editing
+var cachedTimeline = null; // local cache
 
 var defaultTimeline = [
     { dot: '\uD83D\uDC95', date: '01 Mei 2024', event: 'Pertama kali jadian \uD83D\uDE0A' },
@@ -663,26 +667,29 @@ var defaultTimeline = [
 
 var timelineEmojis = ['\uD83D\uDC95', '\u2764\uFE0F', '\uD83D\uDCA7', '\uD83C\uDF1F', '\uD83C\uDF38', '\uD83D\uDC8D', '\uD83C\uDF89', '\u2728', '\uD83E\uDD70', '\uD83D\uDE0A'];
 
-function loadTimeline() {
-    try {
-        var saved = localStorage.getItem(TIMELINE_KEY);
-        return saved ? JSON.parse(saved) : null;
-    } catch (e) {
-        return null;
-    }
-}
-
 function saveTimeline(items) {
-    try {
-        localStorage.setItem(TIMELINE_KEY, JSON.stringify(items));
-    } catch (e) {
-        console.log('Timeline save error');
+    cachedTimeline = items;
+    if (typeof db !== 'undefined') {
+        db.ref('timeline').set(items);
     }
 }
 
 function getTimelineItems() {
-    var saved = loadTimeline();
-    return saved !== null ? saved : defaultTimeline.slice();
+    return cachedTimeline !== null ? cachedTimeline : defaultTimeline.slice();
+}
+
+// Listen for real-time updates from Firebase
+function initTimelineListener() {
+    if (typeof db === 'undefined') return;
+    db.ref('timeline').on('value', function (snapshot) {
+        var data = snapshot.val();
+        if (data && Array.isArray(data)) {
+            cachedTimeline = data;
+        } else {
+            cachedTimeline = defaultTimeline.slice();
+        }
+        renderTimeline();
+    });
 }
 
 function renderTimeline() {
@@ -882,10 +889,10 @@ function animateTimeline() {
 
 var CLOUD_NAME = 'dmi7faczx';
 var UPLOAD_PRESET = 'love_album';
-var STORAGE_KEY = 'loveAlbumPhotos';
 
 // Default photos (bawaan, selalu ada)
 var defaultPhotos = [];
+var cachedPhotos = []; // local cache for uploaded photos
 
 var currentAlbum = 'Semua';
 var albumViewMode = 'overview'; // 'overview' or 'detail'
@@ -893,23 +900,36 @@ var isManageMode = false;
 var currentLbPhotos = [];
 var currentLbIndex = 0;
 
-// Load uploaded photos from localStorage
+// Load uploaded photos from cache
 function loadUploadedPhotos() {
-    try {
-        var saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-        return [];
+    return cachedPhotos;
+}
+
+// Save uploaded photos to Firebase
+function saveUploadedPhotos(photos) {
+    cachedPhotos = photos;
+    if (typeof db !== 'undefined') {
+        db.ref('photos').set(photos);
     }
 }
 
-// Save uploaded photos to localStorage
-function saveUploadedPhotos(photos) {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
-    } catch (e) {
-        console.log('Storage save error');
-    }
+// Listen for real-time updates from Firebase
+function initPhotosListener() {
+    if (typeof db === 'undefined') return;
+    db.ref('photos').on('value', function (snapshot) {
+        var data = snapshot.val();
+        cachedPhotos = (data && Array.isArray(data)) ? data : [];
+        // Refresh album view if currently visible
+        var page3 = document.getElementById('page3');
+        if (page3 && page3.style.display !== 'none') {
+            updateAlbumSelectOptions();
+            if (albumViewMode === 'overview') {
+                renderAlbumOverview();
+            } else {
+                renderAlbumGallery();
+            }
+        }
+    });
 }
 
 // Get all photos (default + uploaded)

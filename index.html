@@ -197,7 +197,24 @@
         <div class="lb-counter" id="lbCounter"></div>
     </div>
 
-    <script type="text/javascript" src="js/love.js?v=24"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyAzFQcVNAEnJdsnpOY_i1nw6y9z1alaW14",
+            authDomain: "love-letter-28cf9.firebaseapp.com",
+            databaseURL: "https://love-letter-28cf9-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "love-letter-28cf9",
+            storageBucket: "love-letter-28cf9.firebasestorage.app",
+            messagingSenderId: "510200665195",
+            appId: "1:510200665195:web:a3c0a6047b4161410e0d2e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.database();
+    </script>
+
+    <script type="text/javascript" src="js/love.js?v=25"></script>
 
 </body>
 
