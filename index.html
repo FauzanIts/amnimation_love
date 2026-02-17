@@ -8,7 +8,7 @@
     <meta name="title" content="Dear Sun">
     <meta name="description" content="Collecting this wasn't easy — your star is my motivation to keep going! Contributions are welcome too.">
     <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
-    <link rel="stylesheet" href="css/love.css?v=32">
+    <link rel="stylesheet" href="css/love.css?v=33">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
@@ -26,18 +26,35 @@
     <!-- Floating hearts background -->
     <canvas id="heartsCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 
-    <!-- Music Visualizer -->
-    <div id="musicVisualizer" class="music-visualizer" style="display:none;">
-        <div class="viz-bar"></div>
-        <div class="viz-bar"></div>
-        <div class="viz-bar"></div>
-        <div class="viz-bar"></div>
-        <div class="viz-bar"></div>
-        <div class="viz-bar"></div>
-        <div class="viz-bar"></div>
-        <div class="viz-bar"></div>
-        <div class="viz-bar"></div>
-        <div class="viz-label">&#9835; Love Love Love<br><span class="viz-artist">Vivii</span></div>
+    <!-- Floating Music Player -->
+    <div class="music-player-float" id="musicPlayerFloat" style="display:none;">
+        <!-- Mini vinyl button -->
+        <div class="music-mini-btn" id="musicMiniBtn">
+            <div class="vinyl-disc" id="miniVinyl"></div>
+        </div>
+        <!-- Expanded player card -->
+        <div class="music-expanded" id="musicExpanded">
+            <button class="player-close" id="playerClose">&times;</button>
+            <div class="player-top">
+                <div class="player-vinyl" id="playerVinyl"></div>
+                <div class="player-info">
+                    <div class="player-song">&#9835; Love Love Love</div>
+                    <div class="player-artist">Vivii</div>
+                </div>
+            </div>
+            <div class="player-progress" id="playerProgress">
+                <div class="player-progress-bar" id="playerProgressBar"></div>
+            </div>
+            <div class="player-time">
+                <span id="playerCurrentTime">0:00</span>
+                <span id="playerDuration">0:00</span>
+            </div>
+            <div class="player-controls">
+                <button class="player-btn" id="playerRewind">&#9194;</button>
+                <button class="player-btn-play" id="playerPlayBtn">&#10074;&#10074;</button>
+                <button class="player-btn" id="playerForward">&#9193;</button>
+            </div>
+        </div>
     </div>
 
     <audio loop id="audios" preload="auto">
@@ -214,7 +231,7 @@
         var db = firebase.database();
     </script>
 
-    <script type="text/javascript" src="js/love.js?v=29"></script>
+    <script type="text/javascript" src="js/love.js?v=30"></script>
 
 </body>
 

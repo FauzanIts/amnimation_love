@@ -183,7 +183,7 @@ window.onload = function () {
         }
 
         // Start music visualizer
-        startMusicVisualizer(audio);
+        initMusicPlayer(audio);
 
         // Start border animation
         const borderTop = document.querySelector('.border-top');
@@ -297,57 +297,146 @@ function startFloatingHearts() {
     animate();
 }
 
-// ==================  Music Visualizer  ==================
-function startMusicVisualizer(audio) {
-    const vizContainer = document.getElementById('musicVisualizer');
-    if (!vizContainer || !audio) return;
+// ==================  Floating Music Player  ==================
+var musicPlayerExpanded = false;
 
-    vizContainer.style.display = 'flex';
-    const bars = vizContainer.querySelectorAll('.viz-bar');
+function initMusicPlayer(audio) {
+    var floatEl = document.getElementById('musicPlayerFloat');
+    var miniBtn = document.getElementById('musicMiniBtn');
+    var miniVinyl = document.getElementById('miniVinyl');
+    var expanded = document.getElementById('musicExpanded');
+    var playerVinyl = document.getElementById('playerVinyl');
+    var playerClose = document.getElementById('playerClose');
+    var playBtn = document.getElementById('playerPlayBtn');
+    var rewindBtn = document.getElementById('playerRewind');
+    var forwardBtn = document.getElementById('playerForward');
+    var progressBar = document.getElementById('playerProgressBar');
+    var progressWrap = document.getElementById('playerProgress');
+    var currentTimeEl = document.getElementById('playerCurrentTime');
+    var durationEl = document.getElementById('playerDuration');
 
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const source = audioCtx.createMediaElementSource(audio);
-        const analyser = audioCtx.createAnalyser();
+    if (!miniBtn || !audio || !floatEl) return;
 
-        analyser.fftSize = 64;
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
+    // Show the player
+    floatEl.style.display = 'block';
 
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
-        function updateBars() {
-            analyser.getByteFrequencyData(dataArray);
-
-            // Pick frequency bands spread across spectrum
-            const step = Math.floor(bufferLength / bars.length);
-            for (let i = 0; i < bars.length; i++) {
-                const value = dataArray[i * step];
-                const height = Math.max(4, (value / 255) * 35);
-                bars[i].style.height = height + 'px';
-
-                // Color intensity based on height
-                const intensity = Math.min(255, 150 + value * 0.4);
-                bars[i].style.background = `linear-gradient(to top, rgb(212,114,122), rgb(255,${intensity},${intensity + 20}))`;
-            }
-
-            requestAnimationFrame(updateBars);
+    // Toggle expanded player on mini button tap
+    function toggleExpand(e) {
+        e.stopPropagation();
+        musicPlayerExpanded = !musicPlayerExpanded;
+        if (musicPlayerExpanded) {
+            expanded.classList.add('show');
+        } else {
+            expanded.classList.remove('show');
         }
-        updateBars();
-
-    } catch (e) {
-        // Fallback: fake visualizer with random animation
-        console.log('Web Audio API not supported, using fallback visualizer');
-        function fakeBars() {
-            for (let i = 0; i < bars.length; i++) {
-                const h = Math.random() * 28 + 4;
-                bars[i].style.height = h + 'px';
-            }
-            setTimeout(fakeBars, 150);
-        }
-        fakeBars();
     }
+    miniBtn.addEventListener('click', toggleExpand);
+
+    // Close expanded
+    if (playerClose) {
+        playerClose.addEventListener('click', function(e) {
+            e.stopPropagation();
+            musicPlayerExpanded = false;
+            expanded.classList.remove('show');
+        });
+    }
+
+    // Play/Pause
+    if (playBtn) {
+        playBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (audio.paused) {
+                audio.play().catch(function(){});
+            } else {
+                audio.pause();
+            }
+        });
+    }
+
+    // Rewind 10s
+    if (rewindBtn) {
+        rewindBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            audio.currentTime = Math.max(0, audio.currentTime - 10);
+        });
+    }
+
+    // Forward 10s
+    if (forwardBtn) {
+        forwardBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
+        });
+    }
+
+    // Progress bar tap to seek
+    if (progressWrap) {
+        progressWrap.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var rect = progressWrap.getBoundingClientRect();
+            var ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            if (audio.duration) {
+                audio.currentTime = ratio * audio.duration;
+            }
+        });
+    }
+
+    // Format time
+    function formatTime(sec) {
+        if (isNaN(sec) || sec < 0) return '0:00';
+        var m = Math.floor(sec / 60);
+        var s = Math.floor(sec % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    // Update progress
+    audio.addEventListener('timeupdate', function() {
+        if (audio.duration) {
+            var pct = (audio.currentTime / audio.duration) * 100;
+            if (progressBar) progressBar.style.width = pct + '%';
+            if (currentTimeEl) currentTimeEl.textContent = formatTime(audio.currentTime);
+        }
+    });
+
+    audio.addEventListener('loadedmetadata', function() {
+        if (durationEl) durationEl.textContent = formatTime(audio.duration);
+    });
+
+    // If duration already loaded
+    if (audio.duration && durationEl) {
+        durationEl.textContent = formatTime(audio.duration);
+    }
+
+    // Play/pause state updates
+    audio.addEventListener('play', function() {
+        miniBtn.classList.add('playing');
+        if (miniVinyl) miniVinyl.classList.add('spinning');
+        if (playerVinyl) playerVinyl.classList.add('spinning');
+        if (playBtn) playBtn.innerHTML = '\u275A\u275A';
+    });
+
+    audio.addEventListener('pause', function() {
+        miniBtn.classList.remove('playing');
+        if (miniVinyl) miniVinyl.classList.remove('spinning');
+        if (playerVinyl) playerVinyl.classList.remove('spinning');
+        if (playBtn) playBtn.innerHTML = '\u25B6';
+    });
+
+    // If already playing, set initial state
+    if (!audio.paused) {
+        miniBtn.classList.add('playing');
+        if (miniVinyl) miniVinyl.classList.add('spinning');
+        if (playerVinyl) playerVinyl.classList.add('spinning');
+        if (playBtn) playBtn.innerHTML = '\u275A\u275A';
+    }
+
+    // Close player when tapping outside
+    document.addEventListener('click', function(e) {
+        if (musicPlayerExpanded && floatEl && !floatEl.contains(e.target)) {
+            musicPlayerExpanded = false;
+            expanded.classList.remove('show');
+        }
+    });
 }
 
 // ==================  Auto Pause/Resume on Tab Switch  ==================
@@ -427,7 +516,7 @@ function typeLoveLetter() {
     if (!letterBody) return;
 
     const lines = [
-        'Hai, My Little Princess.',
+        'Hai, My Little Princess✨',
         '',
         'Aku cuma mau bilang makasih banyak karena sudah kasih kesempatan buat "New Me" ini kembali nemenin hari-hari kamu. Jujur, sampai sekarang aku masih merasa beruntung banget bisa balikan sama kamu, karena bagi aku, kamu itu limited edition yang nggak akan pernah bisa aku temuin di orang lain.',
         '',
@@ -435,7 +524,7 @@ function typeLoveLetter() {
         '',
         'Aku seneng banget sama suara cerewet kamu yang selalu bisa jadi obat tidur paling ampuh buat aku kalau kita lagi video call sampai ketiduran. Jangan pernah berubah ya, karena aku sayang sama semua hal yang ada di diri kamu mulai dari manjanya kamu, hobi merajuknya, sampai ketawa khas kamu yang selalu terbayang-bayang di kepalaku.',
         '',
-        'Meskipun kita sekarang harus LDR antara Palu dan Gorontalo, percaya deh kalau hati aku sudah auto-lock dan cuma kamu yang pegang password-nya. Aku bakal selalu siap jadi asisten pribadi sekaligus pendukung nomor satu buat semua kegiatan kamu.',
+        'Meskipun kita sekarang harus LDR, percaya deh kalau hati aku sudah auto-lock dan cuma kamu yang pegang password-nya. Aku bakal selalu siap jadi asisten pribadi sekaligus pendukung nomor satu buat semua kegiatan kamu.',
         '',
         'Tetap semangat ya sayang,',
         'Kamu bukan cuma "cintaku".',
