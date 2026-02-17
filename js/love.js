@@ -427,38 +427,29 @@ function typeLoveLetter() {
     if (!letterBody) return;
 
     const lines = [
-        'Hai sayang,',
+        'Hai, My Little Princess.',
         '',
-        'Aku nggak mau sok jadi orang paling sempurna.',
-        'Tapi aku mau kamu tau satu hal: aku serius sama kamu.',
-        'Di tengah hari yang kadang rame dan capek,',
-        'kamu itu tetap jadi bagian yang paling aku cari',
-        'tempat aku tenang, tempat aku pulang.',
+        'Aku cuma mau bilang makasih banyak karena sudah kasih kesempatan buat "New Me" ini kembali nemenin hari-hari kamu. Jujur, sampai sekarang aku masih merasa beruntung banget bisa balikan sama kamu, karena bagi aku, kamu itu limited edition yang nggak akan pernah bisa aku temuin di orang lain.',
         '',
-        'Makasih ya\u2026udah jadi cerita yang bikin aku semangat,',
-        'dan jadi alasan aku pengen jadi versi terbaik',
-        'dari diriku sendiri.',
+        'Aku sadar kalau dulu aku mungkin terlalu egois, tapi sekarang fokusku cuma satu: gimana caranya bikin kamu selalu senyum dan nggak merasa feeling lonely lagi. Sebagai buktinya, rambut yang dulu aku bangga-banggain pun rela aku potong demi kamu\uD83D\uDE39',
         '',
-        'Aku juga ngerti, yang kamu butuhin itu',
-        'bukan janji manis doang, tapi rasa aman.',
-        'Jadi aku mau belajar lebih peka:',
-        'nggak ngilang, nggak bikin kamu ngerasa sendiri,',
-        'dan tetap ada walau cuma lewat hal-hal kecil',
-        'yang konsisten.',
-        'Kalau kamu lagi berat, aku pengen jadi orang',
-        'yang pertama kamu inget buat bersandar.',
+        'Aku seneng banget sama suara cerewet kamu yang selalu bisa jadi obat tidur paling ampuh buat aku kalau kita lagi video call sampai ketiduran. Jangan pernah berubah ya, karena aku sayang sama semua hal yang ada di diri kamu mulai dari manjanya kamu, hobi merajuknya, sampai ketawa khas kamu yang selalu terbayang-bayang di kepalaku.',
         '',
-        'Dan karena 18 Februari itu hari spesial kamu\u2026',
-        'aku pengen jadi orang yang ngucapin paling tulus:',
-        'Selamat ulang tahun, sayang.',
-        'Semoga kamu selalu sehat, hatimu selalu tenang,',
-        'dan mimpi-mimpimu satu-satu jadi nyata.',
-        'Aku bangga sama kamu',
-        'dan aku bersyukur bisa punya kamu.',
+        'Meskipun kita sekarang harus LDR antara Palu dan Gorontalo, percaya deh kalau hati aku sudah auto-lock dan cuma kamu yang pegang password-nya. Aku bakal selalu siap jadi asisten pribadi sekaligus pendukung nomor satu buat semua kegiatan kamu.',
         '',
+        'Tetap semangat ya sayang,',
         'Kamu bukan cuma "cintaku".',
         'Kamu itu\u2026 kesayanganku',
         'dan orang yang pengen aku jaga. \u2764\uFE0F',
+        '',
+        '___BIRTHDAY___',
+        'Selamat Ulang Tahun, Sayang! (18 Februari) \uD83C\uDF82\u2728',
+        '',
+        'Di hari spesialmu ini, aku cuma ingin kamu tahu betapa berartinya kehadiranmu buat aku. Aku berdoa semoga di umur yang baru ini, kamu selalu diberikan kesehatan, dilancarkan semua urusan kuliah dan organisasimu, dan tetap menjadi sosok yang paling cantik dan manis di mataku.',
+        '',
+        'Maaf ya kalau sekarang cuma bisa ngucapin dari jauh, tapi aku janji bakal selalu ada buat kamu. Semoga ini jadi awal dari banyak kebahagiaan yang bakal kita jalanin bareng-bareng lagi ke depannya.',
+        '',
+        'I love you more than words can say, Nurlian manisku \uD83E\uDD0D\uD83D\uDE3D\uD83D\uDC97',
     ];
 
     let lineIndex = 0;
@@ -500,10 +491,26 @@ function typeLoveLetter() {
             return;
         }
 
+        // Special birthday banner marker
+        if (line === '___BIRTHDAY___') {
+            const banner = document.createElement('div');
+            banner.className = 'birthday-banner';
+            banner.innerHTML = '<span class="birthday-sparkle">&#10024;</span> <span class="birthday-cake">&#127874;</span> <span class="birthday-sparkle">&#10024;</span>';
+            letterBody.insertBefore(banner, cursor);
+            lineIndex++;
+            setTimeout(typeChar, 800);
+            return;
+        }
+
         // Start new line
         if (charIndex === 0) {
             currentLineEl = document.createElement('div');
-            currentLineEl.className = 'typed-line';
+            // Check if this is the birthday title line
+            if (line.indexOf('Selamat Ulang Tahun') !== -1) {
+                currentLineEl.className = 'typed-line birthday-title-line';
+            } else {
+                currentLineEl.className = 'typed-line';
+            }
             letterBody.insertBefore(currentLineEl, cursor);
         }
 
